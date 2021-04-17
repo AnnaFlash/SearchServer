@@ -1,0 +1,8 @@
+# ninja log v5
+22	552	640400540	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	dc10bf307322d946
+0	765	640400540	CMakeFiles/Final_project_plus_Test.dir/Tests.cpp.obj	a5c313fffdac1a5e
+11	801	640400540	CMakeFiles/Final_project_plus_Test.dir/Search_server.cpp.obj	5c997823d60c07d0
+0	15	0	clean	9992afb1f91dc381
+12	748	640400800	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	dc10bf307322d946
+1	803	640400800	CMakeFiles/Final_project_plus_Test.dir/Tests.cpp.obj	a5c313fffdac1a5e
+23	828	640400800	CMakeFiles/Final_project_plus_Test.dir/Search_server.cpp.obj	5c997823d60c07d0

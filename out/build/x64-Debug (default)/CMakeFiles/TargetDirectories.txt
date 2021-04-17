@@ -1,0 +1,3 @@
+C:/Users/Anna/source/repos/Final_project_plus_Test/out/build/x64-Debug (default)/CMakeFiles/Final_project_plus_Test.dir
+C:/Users/Anna/source/repos/Final_project_plus_Test/out/build/x64-Debug (default)/CMakeFiles/edit_cache.dir
+C:/Users/Anna/source/repos/Final_project_plus_Test/out/build/x64-Debug (default)/CMakeFiles/rebuild_cache.dir
