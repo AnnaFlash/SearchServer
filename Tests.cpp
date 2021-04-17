@@ -1,8 +1,4 @@
 #include "Tests.h"
-using namespace std;
-const double epsilon = 1e-6;
-
-
 template <typename Tfirst, typename Tsecond>
 ostream& operator<<(ostream& out, const pair<Tfirst, Tsecond>& container) {
     out << container.first << ": " << container.second;

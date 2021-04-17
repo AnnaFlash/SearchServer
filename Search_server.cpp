@@ -1,7 +1,5 @@
 #include "Search_Server.h"
 
-const int MAX_RESULT_DOCUMENT_COUNT = 5;
-const double epsilon = 1e-6;
 
 string ReadLine() {
     string s;
@@ -53,33 +51,6 @@ void SearchServer::SetStopWords(const string& text) {
             });
     }
 
-    vector<Document> SearchServer::FindTopDocuments(const string& raw_query, const DocumentStatus& status) const {
-        return FindTopDocuments(raw_query, [status](int document_id, DocumentStatus statuss, int rating) { return statuss == status; });
-    }
-
-    vector<Document> SearchServer::FindTopDocuments(const string& raw_query) const {
-        return FindTopDocuments(raw_query, [](int document_id, DocumentStatus status, int rating) { return status == DocumentStatus::ACTUAL; });
-    }
-
-    template <typename Func>
-    vector<Document> SearchServer::FindTopDocuments(const string& raw_query, const Func& func) const
-    {
-        const Query query = ParseQuery(raw_query);
-        auto matched_documents = FindAllDocuments(query, func);
-        sort(matched_documents.begin(), matched_documents.end(),
-            [](const Document& lhs, const Document& rhs) {
-                if (abs(lhs.relevance - rhs.relevance) < epsilon) {
-                    return lhs.rating > rhs.rating;
-                }
-                else {
-                    return lhs.relevance > rhs.relevance;
-                }
-            });
-        if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT) {
-            matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
-        }
-        return matched_documents;
-    }
 
     int SearchServer::GetDocumentCount() const {
         return documents_.size();
@@ -124,6 +95,15 @@ void SearchServer::SetStopWords(const string& text) {
         return words;
     }
 
+
+    vector<Document> SearchServer::FindTopDocuments(const string& raw_query, const DocumentStatus& status) const {
+        return FindTopDocuments(raw_query, [status](int document_id, DocumentStatus statuss, int rating) { return statuss == status; });
+    }
+
+    vector<Document> SearchServer::FindTopDocuments(const string& raw_query) const {
+        return FindTopDocuments(raw_query, [](int document_id, DocumentStatus status, int rating) { return status == DocumentStatus::ACTUAL; });
+    }
+
     int SearchServer::ComputeAverageRating(const vector<int>& ratings) {
         return (accumulate(ratings.begin(), ratings.end(), 0)
             / static_cast<int>(ratings.size()));
@@ -163,37 +143,4 @@ void SearchServer::SetStopWords(const string& text) {
     double SearchServer::ComputeWordInverseDocumentFreq(const string& word) const {
         return log(GetDocumentCount() * 1.0 / word_to_document_freqs_.at(word).size());
     }
-    template <typename Func>
-    vector<Document> SearchServer::FindAllDocuments(const Query& query, const Func& func) const {
-        map<int, double> document_to_relevance;
-        for (const string& word : query.plus_words) {
-            if (word_to_document_freqs_.count(word) == 0) {
-                continue;
-            }
-            const double inverse_document_freq = ComputeWordInverseDocumentFreq(word);
-            for (const auto& [document_id, term_freq] : word_to_document_freqs_.at(word)) {
-                if (func(document_id, documents_.at(document_id).status, documents_.at(document_id).rating)) {
-                    document_to_relevance[document_id] += term_freq * inverse_document_freq;
-                }
-            }
-        }
 
-        for (const string& word : query.minus_words) {
-            if (word_to_document_freqs_.count(word) == 0) {
-                continue;
-            }
-            for (const auto& [document_id, _] : word_to_document_freqs_.at(word)) {
-                document_to_relevance.erase(document_id);
-            }
-        }
-
-        vector<Document> matched_documents;
-        for (const auto& [document_id, relevance] : document_to_relevance) {
-            matched_documents.push_back({
-                document_id,
-                relevance,
-                documents_.at(document_id).rating
-                });
-        }
-        return matched_documents;
-    }
