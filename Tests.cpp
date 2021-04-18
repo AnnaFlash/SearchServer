@@ -42,7 +42,7 @@ void RunTestImpl(const T& func, const std::string& func_name) {
     func();
     std::cerr << func_name << " OK!" << std::endl;
 }
-// -------- Начало модульных тестов поисковой системы ----------
+
 #define RUN_TEST(func)  RunTestImpl((func), __FUNCTION__);
 template <typename T, typename U>
 void AssertEqualImpl(const T& t, const U& u, const string& t_str, const string& u_str, const string& file,
@@ -81,8 +81,11 @@ void AssertImpl(bool value, const string& expr_str, const string& file, const st
 
 #define ASSERT_HINT(expr, hint) AssertImpl((expr), #expr, __FILE__, __FUNCTION__, __LINE__, (hint))
 
+// Adding documents. 
+// The added document must be found in a search query 
+// that contains words from the document.
+// Stop word support.Stop words are excluded from the text of documents.
 
-// Тест проверяет, что поисковая система исключает стоп-слова при добавлении документов
 void TestExcludeStopWordsFromAddedDocumentContent() {
     const int doc_id = 42;
     const string content = "cat in the city"s;
@@ -104,9 +107,10 @@ void TestExcludeStopWordsFromAddedDocumentContent() {
     }
 }
 
-/*
-Разместите код остальных тестов здесь
-*/
+// Support for negative keywords. 
+// Documents containing negative keywords from a search term 
+// should not be included in search results.
+
 void TestMinusWords() {
     const int doc_id1 = 42;
     const string content1 = "cat in the city"s;
@@ -130,35 +134,36 @@ void TestMinusWords() {
     }
 }
 
-//Матчинг документов. При матчинге документа по поисковому запросу должны быть 
-//возвращены все слова из поискового запроса, присутствующие в документе. 
-//Если есть соответствие хотя бы по одному минус-слову, должен возвращаться пустой список слов.
+// Matching documents. When matching a document for a search query, there should be
+// Returns all words from the search query that are present in the document.
+// If there is a match for at least one negative keyword, an empty wordlist should be returned.
 
 void TestMatching() {
     SearchServer search_server;
-    search_server.AddDocument(0, "белый кот и модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
-    search_server.AddDocument(1, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
-    search_server.AddDocument(2, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
 
-    const auto [words0, status0] = search_server.MatchDocument("пушистый кот"s, 0);
+    const auto [words0, status0] = search_server.MatchDocument("fluffy cat"s, 0);
     ASSERT_EQUAL(words0.size(), 1);
-    const auto [words1, status1] = search_server.MatchDocument("пушистый кот"s, 1);
+    const auto [words1, status1] = search_server.MatchDocument("fluffy cat"s, 1);
     ASSERT_EQUAL(words1.size(), 2);
-    const auto [words2, status2] = search_server.MatchDocument("хвост выразительные глаза -пёс"s, 2);
+    const auto [words2, status2] = search_server.MatchDocument("tail expressive eyes -dog"s, 2);
     ASSERT_HINT(words2.empty(), "Minus word, word list must be empty");
 }
 
-//Сортировка найденных документов по релевантности. 
-//Возвращаемые при поиске документов результаты должны 
-//быть отсортированы в порядке убывания релевантности.
-//Корректное вычисление релевантности найденных документов.
+// Sort the found documents by relevance.
+// The results returned when searching for documents should
+// be sorted in descending order of relevance.
+// Correct calculation of the relevance of the found documents.
+
 void TestRelevance() {
     SearchServer search_server;
-    search_server.SetStopWords("и в на"s);
-    search_server.AddDocument(0, "белый кот и модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
-    search_server.AddDocument(1, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
-    search_server.AddDocument(2, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
-    const auto found_docs = search_server.FindTopDocuments("пушистый ухоженный кот"s);
+    search_server.SetStopWords("and in on"s);
+    search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    const auto found_docs = search_server.FindTopDocuments("fluffy well-groomed cat"s);
     ASSERT_EQUAL_HINT(found_docs[0].id, 1, "Wrong sorting order"s);
     ASSERT_EQUAL_HINT(found_docs[1].id, 2, "Wrong sorting order"s);
 
@@ -166,66 +171,67 @@ void TestRelevance() {
     ASSERT_HINT((abs(found_docs[1].relevance - 0.274653) < epsilon), "Incorrect calculation of relevance"s);
 }
 
-//Вычисление рейтинга документов.
-//Рейтинг добавленного документа равен 
-//среднему арифметическому оценок документа.
+// Calculate the rating of documents.
+// The rating of the added document is
+// the arithmetic mean of the document scores.
 
 void TestRating() {
     SearchServer search_server;
-    search_server.SetStopWords("и в на"s);
-    search_server.AddDocument(0, "белый кот и модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 }); //rate 2
-    const auto found_docs0 = search_server.FindTopDocuments("кот"s);
+    search_server.SetStopWords("and in on"s);
+    search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 }); //rate 2
+    const auto found_docs0 = search_server.FindTopDocuments("cat"s);
     ASSERT_HINT((abs(found_docs0[0].rating - 2) < epsilon), "Incorrect rating calculation"s); //Rating check
 
-    search_server.AddDocument(1, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 }); //rate -1
-    const auto found_docs1 = search_server.FindTopDocuments("пёс"s);
+    search_server.AddDocument(1, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 }); //rate -1
+    const auto found_docs1 = search_server.FindTopDocuments("dog"s);
     ASSERT_HINT((abs(found_docs1[0].rating + 1) < epsilon), "Incorrect rating calculation"s);   //Negative rating check
     ASSERT_HINT((found_docs1[0].rating < 0), "Miscalculation of negative rating"s);
 
-    search_server.AddDocument(2, "ухоженный скворец евгений"s, DocumentStatus::ACTUAL, {}); //rate 0
-    const auto found_docs2 = search_server.FindTopDocuments("скворец"s);
+    search_server.AddDocument(2, "well-groomed starling Eugene"s, DocumentStatus::ACTUAL, {}); //rate 0
+    const auto found_docs2 = search_server.FindTopDocuments("starling"s);
     ASSERT_HINT(found_docs2[0].rating == 0, "No rating for the document, rating must be 0"s);   //No rating check
 
 }
 
-//Фильтрация результатов поиска с использованием предиката, 
-//задаваемого пользователем.
-//Поиск документов, имеющих заданный статус.
+// Filter search results using a predicate,
+// user-defined.
+// Search for documents with a given status.
+
 void TestPredicate() {
     SearchServer search_server;
-    search_server.SetStopWords("и в на"s);
-    search_server.AddDocument(0, "белый кот и модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 });
-    search_server.AddDocument(1, "пушистый кот пушистый хвост"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
-    search_server.AddDocument(2, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
-    search_server.AddDocument(3, "ухоженный скворец евгений"s, DocumentStatus::BANNED, { 9 });
-    search_server.AddDocument(4, "дядя Стёпа милиционер"s, DocumentStatus::BANNED, { 19,2 });
+    search_server.SetStopWords("and in on"s);
+    search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
+    search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
+    search_server.AddDocument(3, "well-groomed starling Eugene"s, DocumentStatus::BANNED, { 9 });
+    search_server.AddDocument(4, "uncle Styopa policeman"s, DocumentStatus::BANNED, { 19,2 });
     set <int> actual;
     set <int> actual_input = { 0,1,2 };
-    for (const Document& document : search_server.FindTopDocuments("пушистый ухоженный кот дядя Стёпа"s, DocumentStatus::ACTUAL)) {
+    for (const Document& document : search_server.FindTopDocuments("fluffy well-groomed cat uncle Styopa"s, DocumentStatus::ACTUAL)) {
         actual.insert(document.id);
     }
     ASSERT_EQUAL_HINT(actual, actual_input, "Invalid sampling by ACTUAL status"s);
     set <int> banned;
     set <int> banned_input = { 3,4 };
-    for (const Document& document : search_server.FindTopDocuments("пушистый ухоженный кот дядя Стёпа"s, DocumentStatus::BANNED)) {
+    for (const Document& document : search_server.FindTopDocuments("fluffy well-groomed cat uncle Styopa"s, DocumentStatus::BANNED)) {
         banned.insert(document.id);
     }
     ASSERT_EQUAL_HINT(banned, banned_input, "Invalid sampling by user status"s);
     set <int> even;
     set <int> even_input = { 0,2,4 };
-    for (const Document& document : search_server.FindTopDocuments("пушистый ухоженный кот дядя Стёпа"s, [](int document_id, DocumentStatus status, int rating) { return document_id % 2 == 0; })) {
+    for (const Document& document : search_server.FindTopDocuments("fluffy well-groomed cat uncle Styopa"s, [](int document_id, DocumentStatus status, int rating) { return document_id % 2 == 0; })) {
         even.insert(document.id);
     }
     ASSERT_EQUAL_HINT(even, even_input, "Invalid sampling by id"s);
     set <int> rate;
     set <int> rate_input = { 1,3,4 };
-    for (const Document& document : search_server.FindTopDocuments("пушистый ухоженный кот дядя Стёпа"s, [](int document_id, DocumentStatus status, int rating) { return rating > 2; })) {
+    for (const Document& document : search_server.FindTopDocuments("fluffy well-groomed cat uncle Styopa"s, [](int document_id, DocumentStatus status, int rating) { return rating > 2; })) {
         rate.insert(document.id);
     }
     ASSERT_EQUAL_HINT(rate, rate_input, "Invalid sampling by ratings"s);
 }
 
-// Функция TestSearchServer является точкой входа для запуска тестов
+
 void TestSearchServer() {
     RUN_TEST(TestExcludeStopWordsFromAddedDocumentContent);
     RUN_TEST(TestMatching);
@@ -233,5 +239,4 @@ void TestSearchServer() {
     RUN_TEST(TestPredicate);
     RUN_TEST(TestRating);
     RUN_TEST(TestRelevance);
-    // Не забудьте вызывать остальные тесты здесь
 }
