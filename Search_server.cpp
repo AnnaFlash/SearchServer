@@ -105,8 +105,8 @@ void SearchServer::SetStopWords(const string& text) {
     }
 
     int SearchServer::ComputeAverageRating(const vector<int>& ratings) {
-        return (accumulate(ratings.begin(), ratings.end(), 0)
-            / static_cast<int>(ratings.size()));
+        return ratings.size() > 0 ? (accumulate(ratings.begin(), ratings.end(), 0)
+            / static_cast<int>(ratings.size())) : 0;
     }
  
     SearchServer::QueryWord SearchServer::ParseQueryWord(string text) const {

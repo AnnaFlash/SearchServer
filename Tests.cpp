@@ -171,31 +171,21 @@ void TestRelevance() {
 //среднему арифметическому оценок документа.
 
 void TestRating() {
-    const int doc_id = 42;
-    const string doc42 = "cat in the city"s;
-    const vector<int> ratings = { 3, 9, 8 };
-    const int doc_id2 = 52;
-    const string doc52 = "cat on the moon with cat"s;
-    const vector<int> ratings2 = { 13, 5, 18 };
-    const int doc_id3 = 22;
-    const string doc22 = "journey to the center of the earth"s;
-    const vector<int> ratings3 = { 23, 11, 9 };
-    map<int, vector<int>> id_rating = { {42,ratings},
-                                    {52, ratings2},
-                                    {22,ratings3} };
-    SearchServer server;
-    server.AddDocument(doc_id, doc42, DocumentStatus::ACTUAL, ratings);
-    server.AddDocument(doc_id2, doc52, DocumentStatus::ACTUAL, ratings2);
-    server.AddDocument(doc_id3, doc22, DocumentStatus::ACTUAL, ratings3);
-    const auto found_docs = server.FindTopDocuments("moon city earth"s);
-    for (const auto& f : found_docs) {
-        int avrating = 0;
-        for (auto rate : id_rating.at(f.id)) {
-            avrating += rate;
-        }
-        avrating /= static_cast<double> (id_rating.at(f.id).size());
-        ASSERT_EQUAL_HINT(f.rating, avrating, "Incorrect rating calculation"s);
-    }
+    SearchServer search_server;
+    search_server.SetStopWords("и в на"s);
+    search_server.AddDocument(0, "белый кот и модный ошейник"s, DocumentStatus::ACTUAL, { 8, -3 }); //rate 2
+    const auto found_docs0 = search_server.FindTopDocuments("кот"s);
+    ASSERT_HINT((abs(found_docs0[0].rating - 2) < epsilon), "Incorrect rating calculation"s); //Rating check
+
+    search_server.AddDocument(1, "ухоженный пёс выразительные глаза"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 }); //rate -1
+    const auto found_docs1 = search_server.FindTopDocuments("пёс"s);
+    ASSERT_HINT((abs(found_docs1[0].rating + 1) < epsilon), "Incorrect rating calculation"s);   //Negative rating check
+    ASSERT_HINT((found_docs1[0].rating < 0), "Miscalculation of negative rating"s);
+
+    search_server.AddDocument(2, "ухоженный скворец евгений"s, DocumentStatus::ACTUAL, {}); //rate 0
+    const auto found_docs2 = search_server.FindTopDocuments("скворец"s);
+    ASSERT_HINT(found_docs2[0].rating == 0, "No rating for the document, rating must be 0"s);   //No rating check
+
 }
 
 //Фильтрация результатов поиска с использованием предиката, 

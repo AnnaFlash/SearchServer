@@ -32,6 +32,7 @@ public:
     int GetDocumentCount() const;
     vector<Document> FindTopDocuments(const string& raw_query, const DocumentStatus& status) const;
     vector<Document> FindTopDocuments(const string& raw_query) const;
+
     template <typename Func>
     vector<Document> FindTopDocuments(const string& raw_query, const Func& func) const
     {
