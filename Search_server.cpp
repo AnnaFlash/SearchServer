@@ -1,5 +1,4 @@
-#include "Search_Server.h"
-
+﻿#include "Search_Server.h"
 
 string ReadLine() {
     string s;
@@ -30,15 +29,44 @@ vector<string> SplitIntoWords(const string& text) {
 
     return words;
 }
-// check visual studio work
+// 
 
-void SearchServer::SetStopWords(const string& text) {
-        for (const string& word : SplitIntoWords(text)) {
-            stop_words_.insert(word);
+template <typename StringContainer>
+set<string> SearchServer::MakeUniqueNonEmptyStrings(const StringContainer& strings) {
+    set<string> non_empty_strings;
+    for (const string& str : strings) {
+        if (!str.empty()) {
+            non_empty_strings.insert(str);
         }
     }
+    return non_empty_strings;
+}
 
+template <typename StringContainer>
+SearchServer::SearchServer(const StringContainer& stop_words)
+    : stop_words_(MakeUniqueNonEmptyStrings(stop_words)) {
+    for (const auto& stop_word : stop_words_) {
+        if (!IsValidWord(stop_word)) {
+            throw invalid_argument("wrong stop words"s);
+        }
+    }
+}
+SearchServer::SearchServer(const string& stop_words_text)
+    : SearchServer(SplitIntoWords(stop_words_text))  // Invoke delegating constructor from string container
+{
+    for (const auto& stop_word : stop_words_) {
+        if (!IsValidWord(stop_word)) {
+            throw invalid_argument("wrong stop words"s);
+        }
+    }
+}
     void SearchServer::AddDocument(int document_id, const string& document, const DocumentStatus& status, const vector<int>& ratings) {
+        if (document_id < 0) {
+            throw invalid_argument("try to add document with negative id");
+        }
+        if (documents_.count(document_id) > 0)
+        {throw invalid_argument("duplicate id");}
+
         const vector<string> words = SplitIntoWordsNoStop(document);
         const double inv_word_count = 1.0 / words.size();
         for (const string& word : words) {
@@ -49,6 +77,7 @@ void SearchServer::SetStopWords(const string& text) {
                 ComputeAverageRating(ratings),
                 status
             });
+        document_ids_.push_back(document_id);
     }
 
 
@@ -56,6 +85,15 @@ void SearchServer::SetStopWords(const string& text) {
         return documents_.size();
     }
 
+    int SearchServer::GetDocumentId(int index) const {
+        if (index >= 0 && index < GetDocumentCount()) {
+            return document_ids_[index];
+        }
+        else {
+            throw out_of_range("индекс выходит за пределы допустимого диапазона"s);
+        }
+        return INVALID_DOCUMENT_ID;
+    }
     tuple<vector<string>, DocumentStatus> SearchServer::MatchDocument(const string& raw_query, int document_id) const {
         const Query query = ParseQuery(raw_query);
         vector<string> matched_words;
@@ -84,10 +122,18 @@ void SearchServer::SetStopWords(const string& text) {
     bool SearchServer::IsStopWord(const string& word) const {
         return stop_words_.count(word) > 0;
     }
-
+    bool SearchServer::IsValidWord(const string& word) {
+        // A valid word must not contain special characters
+        return none_of(word.begin(), word.end(), [](char c) {
+            return c >= '\0' && c < ' ';
+            });
+    }
     vector<string> SearchServer::SplitIntoWordsNoStop(const string& text) const {
         vector<string> words;
         for (const string& word : SplitIntoWords(text)) {
+            if (!IsValidWord(word)) {
+                throw invalid_argument("Spec symvol in stop words");
+            }
             if (!IsStopWord(word)) {
                 words.push_back(word);
             }
@@ -108,13 +154,17 @@ void SearchServer::SetStopWords(const string& text) {
         return ratings.size() > 0 ? (accumulate(ratings.begin(), ratings.end(), 0)
             / static_cast<int>(ratings.size())) : 0;
     }
- 
     SearchServer::QueryWord SearchServer::ParseQueryWord(string text) const {
+        if (text.empty()) {
+            throw invalid_argument(""s);
+        }
         bool is_minus = false;
-        // Word shouldn't be empty
         if (text[0] == '-') {
             is_minus = true;
             text = text.substr(1);
+        }
+        if (text.empty() || text[0] == '-' || !IsValidWord(text)) {
+            throw invalid_argument(""s);
         }
         return {
             text,

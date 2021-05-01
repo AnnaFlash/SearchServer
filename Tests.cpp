@@ -91,7 +91,7 @@ void TestExcludeStopWordsFromAddedDocumentContent() {
     const string content = "cat in the city"s;
     const vector<int> ratings = { 1, 2, 3 };
     {
-        SearchServer server;
+        SearchServer server(""s);
         server.AddDocument(doc_id, content, DocumentStatus::ACTUAL, ratings);
         const auto found_docs = server.FindTopDocuments("in"s);
         ASSERT_EQUAL(found_docs.size(), 1u);
@@ -100,8 +100,7 @@ void TestExcludeStopWordsFromAddedDocumentContent() {
     }
 
     {
-        SearchServer server;
-        server.SetStopWords("in the"s);
+        SearchServer server("in the"s);
         server.AddDocument(doc_id, content, DocumentStatus::ACTUAL, ratings);
         ASSERT_HINT(server.FindTopDocuments("in"s).empty(), "Stop words must be excluded from documents"s);
     }
@@ -119,7 +118,7 @@ void TestMinusWords() {
     const string content2 = "cat in the village"s;
     const vector<int> ratings2 = { 3, 4, 5 };
     {
-        SearchServer server;
+        SearchServer server(""s);
         server.AddDocument(doc_id1, content1, DocumentStatus::ACTUAL, ratings1);
         server.AddDocument(doc_id2, content2, DocumentStatus::ACTUAL, ratings2);
 
@@ -139,7 +138,7 @@ void TestMinusWords() {
 // If there is a match for at least one negative keyword, an empty wordlist should be returned.
 
 void TestMatching() {
-    SearchServer search_server;
+    SearchServer search_server(""s);
     search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
     search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
     search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
@@ -158,8 +157,7 @@ void TestMatching() {
 // Correct calculation of the relevance of the found documents.
 
 void TestRelevance() {
-    SearchServer search_server;
-    search_server.SetStopWords("and in on"s);
+    SearchServer search_server("and in on"s);
     search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
     search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
     search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
@@ -176,8 +174,7 @@ void TestRelevance() {
 // the arithmetic mean of the document scores.
 
 void TestRating() {
-    SearchServer search_server;
-    search_server.SetStopWords("and in on"s);
+    SearchServer search_server("and in on"s);
     search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 }); //rate 2
     const auto found_docs0 = search_server.FindTopDocuments("cat"s);
     ASSERT_HINT((abs(found_docs0[0].rating - 2) < epsilon), "Incorrect rating calculation"s); //Rating check
@@ -198,8 +195,7 @@ void TestRating() {
 // Search for documents with a given status.
 
 void TestPredicate() {
-    SearchServer search_server;
-    search_server.SetStopWords("and in on"s);
+    SearchServer search_server("and in on"s);
     search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
     search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
     search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });

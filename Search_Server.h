@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <algorithm>
 #include <cmath>
 #include <utility>
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-
+#include <optional>
 using namespace std;
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 const double epsilon = 1e-6;
@@ -16,6 +16,16 @@ struct Document {
     int id;
     double relevance;
     int rating;
+    Document() {
+        id = 0;
+        relevance = 0.0;
+        rating = 0;
+    }
+    Document(int id, double relevance, int rating)
+        : id(id)
+        , relevance(relevance)
+        , rating(rating) {
+    }
 };
 
 enum class DocumentStatus {
@@ -26,10 +36,23 @@ enum class DocumentStatus {
 };
 class SearchServer {
 public:
-	void SetStopWords(const string& text);
+    // Defines an invalid document id
+// You can refer this constant as SearchServer::INVALID_DOCUMENT_ID
+    inline static constexpr int INVALID_DOCUMENT_ID = -1;
+    template<typename TError>
+    void ErrorThrowProcessing(const TError& e, string error_type) const {
+        cout << error_type << ": "s << e.what() << endl;
+    }   
+    template <typename StringContainer>
+    set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings);
+    template <typename StringContainer>
+    explicit SearchServer(const StringContainer& stop_words);
+
+    explicit SearchServer(const string& stop_words_text);
 	void AddDocument(int document_id, const string& document, const DocumentStatus& status, const vector<int>& ratings);
 
     int GetDocumentCount() const;
+    int GetDocumentId(int index) const;
     vector<Document> FindTopDocuments(const string& raw_query, const DocumentStatus& status) const;
     vector<Document> FindTopDocuments(const string& raw_query) const;
 
@@ -61,8 +84,9 @@ private:
     set<string> stop_words_;
     map<string, map<int, double>> word_to_document_freqs_;
     map<int, DocumentData> documents_;
-
+    vector<int> document_ids_;
     bool IsStopWord(const string& word) const;
+    static bool IsValidWord(const string& word);
     vector<string> SplitIntoWordsNoStop(const string& text) const;
     static int ComputeAverageRating(const vector<int>& ratings);
     struct QueryWord {
