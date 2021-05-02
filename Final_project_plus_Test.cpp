@@ -78,4 +78,5 @@ int main() {
     MatchDocuments(search_server, "модный -кот"s);
     MatchDocuments(search_server, "модный --пёс"s);
     MatchDocuments(search_server, "пушистый - хвост"s);
+    MatchDocuments(search_server, "пушистый скво\x12рец"s);
 }

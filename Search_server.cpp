@@ -65,7 +65,9 @@ SearchServer::SearchServer(const string& stop_words_text)
             throw invalid_argument("try to add document with negative id");
         }
         if (documents_.count(document_id) > 0)
-        {throw invalid_argument("duplicate id");}
+        {
+            throw invalid_argument("duplicate id");
+        }
 
         const vector<string> words = SplitIntoWordsNoStop(document);
         const double inv_word_count = 1.0 / words.size();
@@ -90,7 +92,7 @@ SearchServer::SearchServer(const string& stop_words_text)
             return document_ids_[index];
         }
         else {
-            throw out_of_range("индекс выходит за пределы допустимого диапазона"s);
+            throw out_of_range("index negative or out of range"s);
         }
         return INVALID_DOCUMENT_ID;
     }
@@ -156,15 +158,21 @@ SearchServer::SearchServer(const string& stop_words_text)
     }
     SearchServer::QueryWord SearchServer::ParseQueryWord(string text) const {
         if (text.empty()) {
-            throw invalid_argument(""s);
+            throw invalid_argument("Empty query"s);
         }
         bool is_minus = false;
         if (text[0] == '-') {
             is_minus = true;
             text = text.substr(1);
+            if (text.empty()) {
+                throw invalid_argument("Minus word can't be empty"s);
+            }
         }
-        if (text.empty() || text[0] == '-' || !IsValidWord(text)) {
-            throw invalid_argument(""s);
+        if (text[0] == '-') {
+            throw invalid_argument("Double minus in minus word"s);
+        }
+        if (!IsValidWord(text)) {
+            throw invalid_argument("Spec symvol"s);
         }
         return {
             text,
