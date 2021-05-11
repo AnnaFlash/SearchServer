@@ -1,14 +1,5 @@
 ﻿#pragma once
-#include <algorithm>
-#include <cmath>
-#include <utility>
-#include <numeric>
-#include <map>
-#include <set>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <optional>
+#include "headers.h"
 using namespace std;
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 const double epsilon = 1e-6;
