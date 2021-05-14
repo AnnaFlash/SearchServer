@@ -36,6 +36,7 @@ public:
     }   
     template <typename StringContainer>
     set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings);
+    explicit SearchServer();
     template <typename StringContainer>
     explicit SearchServer(const StringContainer& stop_words);
 
