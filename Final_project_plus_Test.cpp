@@ -48,7 +48,7 @@ void FindTopDocuments(const SearchServer& search_server, const string& raw_query
     cout << "Результаты поиска по запросу: "s << raw_query << endl;
     try {
         for (const Document& document : search_server.FindTopDocuments(raw_query)) {
-            //PrintDocument(document);
+            cout << document;
         }
     }
     catch (const exception& e) {
@@ -96,5 +96,6 @@ int main() {
     // первый запрос удален, 1437 запросов с нулевым результатом
     request_queue.AddFindRequest("sparrow"s);
     cout << "Total empty requests: "s << request_queue.GetNoResultRequests() << endl;
+    FindTopDocuments(search_server, "curly dog");
     return 0;
 }
