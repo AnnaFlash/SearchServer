@@ -31,7 +31,8 @@ public:
 // You can refer this constant as SearchServer::INVALID_DOCUMENT_ID
     inline static constexpr int INVALID_DOCUMENT_ID = -1;
     template<typename TError>
-    void ErrorThrowProcessing(const TError& e, string error_type) const {
+    void ErrorThrowProcessing(const TError& e, string error_type) const 
+    {
         cout << error_type << ": "s << e.what() << endl;
     }   
     template <typename StringContainer>
@@ -54,15 +55,15 @@ public:
         const Query query = ParseQuery(raw_query);
         auto matched_documents = FindAllDocuments(query, func);
         sort(matched_documents.begin(), matched_documents.end(),
-            [](const Document& lhs, const Document& rhs) {
-                if (abs(lhs.relevance - rhs.relevance) < epsilon) {
+            [](const Document& lhs, const Document& rhs)  {
+                if (abs(lhs.relevance - rhs.relevance) < epsilon)  {
                     return lhs.rating > rhs.rating;
                 }
-                else {
+                else  {
                     return lhs.relevance > rhs.relevance;
                 }
             });
-        if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT) {
+        if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT)  {
             matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
         }
         return matched_documents;
@@ -94,7 +95,8 @@ private:
     Query ParseQuery(const string& text) const;
     double ComputeWordInverseDocumentFreq(const string& word) const;
     template <typename Func>
-    vector<Document>FindAllDocuments(const Query& query, const Func& func) const {
+    vector<Document>FindAllDocuments(const Query& query, const Func& func) const 
+    {
         map<int, double> document_to_relevance;
         for (const string& word : query.plus_words) {
             if (word_to_document_freqs_.count(word) == 0) {

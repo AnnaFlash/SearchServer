@@ -511,7 +511,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/Anna/source/repos/Final_project_plus_Test/out/install/x64-Debug"
+			"value" : "C:/Users/Anna/Source/Repos/Final_project_plus_Test/out/install/x64-Debug"
 		},
 		{
 			"name" : "CMAKE_LINKER",

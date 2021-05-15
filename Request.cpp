@@ -4,7 +4,8 @@ RequestQueue::RequestQueue(const SearchServer& search_server)
 	search_server_ = &search_server;
 }
 template <typename DocumentPredicate>
-vector<Document> RequestQueue::AddFindRequest(const string& raw_query, DocumentPredicate document_predicate) {
+vector<Document> RequestQueue::AddFindRequest(const string& raw_query, DocumentPredicate document_predicate) 
+{
 	vector<Document> result = (*search_server_).FindTopDocuments(raw_query, document_predicate);
 	UpdateRequests(result);
 	return result;

@@ -1,6 +1,12 @@
 # ninja log v5
-21	2225	642731878	CMakeFiles/Final_project_plus_Test.dir/Request.cpp.obj	85af0a214c25d649
-1	2369	642731879	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	53bdd9baab13af14
-42	3023	642731879	CMakeFiles/Final_project_plus_Test.dir/Search_server.cpp.obj	d0d87f9fa9ee8072
-70	3104	642731879	CMakeFiles/Final_project_plus_Test.dir/Tests.cpp.obj	c81e758492b28055
-3106	4646	642731881	Final_project_plus_Test.exe	facfd98edf262581
+77	1851	642788542	CMakeFiles/Final_project_plus_Test.dir/Request.cpp.obj	85af0a214c25d649
+28	2155	642788543	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	53bdd9baab13af14
+1	2481	642788543	CMakeFiles/Final_project_plus_Test.dir/Tests.cpp.obj	c81e758492b28055
+52	2562	642788543	CMakeFiles/Final_project_plus_Test.dir/Search_server.cpp.obj	d0d87f9fa9ee8072
+2563	3705	642788544	Final_project_plus_Test.exe	facfd98edf262581
+1	1164	642788563	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	53bdd9baab13af14
+1166	1604	642788563	Final_project_plus_Test.exe	facfd98edf262581
+0	1657	642788600	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	53bdd9baab13af14
+1659	2320	642788601	Final_project_plus_Test.exe	facfd98edf262581
+1	1313	642788678	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	53bdd9baab13af14
+1322	1885	642788678	Final_project_plus_Test.exe	facfd98edf262581

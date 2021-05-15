@@ -5,17 +5,21 @@ public:
     IteratorRange(It begin, It end)
         : begin_(begin)
         , end_(end)
-    {}
+    {
+    }
 
-    auto begin() const {
+    auto begin() const 
+    {
         return begin_;
     }
 
-    auto end() const {
+    auto end() const 
+    {
         return end_;
     }
 
-    auto size() const {
+    auto size() const 
+    {
         return distance(begin_, end_);
     }
 private:
@@ -26,7 +30,8 @@ private:
 template <typename It>
 class Paginator {
 public:
-    Paginator(It begin, It end, size_t size) {
+    Paginator(It begin, It end, size_t size) 
+    {
         while (distance(begin, end) > size) {
             auto page = IteratorRange(begin, begin + size);
             pages_.push_back(page);
@@ -36,15 +41,18 @@ public:
 
     }
 
-    auto begin() const {
+    auto begin() const 
+    {
         return pages_.begin();
     }
 
-    auto end() const {
+    auto end() const 
+    {
         return pages_.end();
     }
 
-    auto size() const {
+    auto size() const 
+    {
         return pages_.size();
     }
 private:
