@@ -36,14 +36,30 @@ public:
         cout << error_type << ": "s << e.what() << endl;
     }   
     template <typename StringContainer>
-    set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings);
-    explicit SearchServer();
-    template <typename StringContainer>
-    explicit SearchServer(const StringContainer& stop_words);
+    set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings)
+    {
+        set<string> non_empty_strings;
+        for (const string& str : strings) {
+            if (!str.empty()) {
+                non_empty_strings.insert(str);
+            }
+        }
+        return non_empty_strings;
+    }
 
+    template <typename StringContainer>
+    SearchServer(const StringContainer& stop_words)
+        : stop_words_(MakeUniqueNonEmptyStrings(stop_words))
+    {
+        for (const auto& stop_word : stop_words_) {
+            if (!IsValidWord(stop_word)) {
+                throw invalid_argument("wrong stop words"s);
+            }
+        }
+    }
+    explicit SearchServer();
     explicit SearchServer(const string& stop_words_text);
 	void AddDocument(int document_id, const string& document, const DocumentStatus& status, const vector<int>& ratings);
-
     int GetDocumentCount() const;
     int GetDocumentId(int index) const;
     vector<Document> FindTopDocuments(const string& raw_query, const DocumentStatus& status) const;

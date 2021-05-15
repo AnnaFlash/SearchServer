@@ -115,5 +115,12 @@ int main()
         cout << *page << endl;
         cout << "Page break"s << endl;
     }
+    set<string> v;
+    v.insert("curly"s);
+    v.insert("dog"s);
+    SearchServer search_server1(v);
+    search_server1.AddDocument(1, "curly cat curly tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
+    FindTopDocuments(search_server1, "tail"s);
+    cout << endl;
     return 0;
 }

@@ -32,33 +32,10 @@ vector<string> SplitIntoWords(const string& text)
 
     return words;
 }
-// 
-
-template <typename StringContainer>
-set<string> SearchServer::MakeUniqueNonEmptyStrings(const StringContainer& strings) 
-{
-    set<string> non_empty_strings;
-    for (const string& str : strings) {
-        if (!str.empty()) {
-            non_empty_strings.insert(str);
-        }
-    }
-    return non_empty_strings;
-}
-
-template <typename StringContainer>
-SearchServer::SearchServer(const StringContainer& stop_words)
-    : stop_words_(MakeUniqueNonEmptyStrings(stop_words)) 
-{
-    for (const auto& stop_word : stop_words_) {
-        if (!IsValidWord(stop_word)) {
-            throw invalid_argument("wrong stop words"s);
-        }
-    }
-}
 SearchServer::SearchServer()
 {
 }
+// 
 SearchServer::SearchServer(const string& stop_words_text)
     : SearchServer(SplitIntoWords(stop_words_text))  // Invoke delegating constructor from string container
 {
