@@ -25,6 +25,17 @@ enum class DocumentStatus {
     BANNED,
     REMOVED,
 };
+template <typename StringContainer>
+set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings)
+{
+    set<string> non_empty_strings;
+    for (const string& str : strings) {
+        if (!str.empty()) {
+            non_empty_strings.insert(str);
+        }
+    }
+    return non_empty_strings;
+}
 class SearchServer {
 public:
     // Defines an invalid document id
@@ -35,17 +46,6 @@ public:
     {
         cout << error_type << ": "s << e.what() << endl;
     }   
-    template <typename StringContainer>
-    set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings)
-    {
-        set<string> non_empty_strings;
-        for (const string& str : strings) {
-            if (!str.empty()) {
-                non_empty_strings.insert(str);
-            }
-        }
-        return non_empty_strings;
-    }
 
     template <typename StringContainer>
     SearchServer(const StringContainer& stop_words)
