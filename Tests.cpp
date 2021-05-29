@@ -1,13 +1,15 @@
 #include "Tests.h"
 template <typename Tfirst, typename Tsecond>
-ostream& operator<<(ostream& out, const pair<Tfirst, Tsecond>& container) {
+ostream& operator<<(ostream& out, const pair<Tfirst, Tsecond>& container)
+{
     out << container.first << ": " << container.second;
     return out;
 }
 
 template <typename T>
 
-void Print(ostream& out, const T& container) {
+void Print(ostream& out, const T& container) 
+{
     for (const auto& element : container) {
         if (*(--container.end()) == element) { out << element; continue; }
         out << element << ", "s;
@@ -15,7 +17,8 @@ void Print(ostream& out, const T& container) {
 }
 
 template <typename T>
-ostream& operator<<(ostream& out, const vector<T>& container) {
+ostream& operator<<(ostream& out, const vector<T>& container) 
+{
     out << "[";
     Print(out, container);
     out << "]";
@@ -23,14 +26,16 @@ ostream& operator<<(ostream& out, const vector<T>& container) {
 }
 
 template <typename T>
-ostream& operator<<(ostream& out, const set<T>& container) {
+ostream& operator<<(ostream& out, const set<T>& container)
+{
     out << "{";
     Print(out, container);
     out << "}";
     return out;
 }
 template <typename Tfirst, typename Tsecond>
-ostream& operator<<(ostream& out, const map<Tfirst, Tsecond>& container) {
+ostream& operator<<(ostream& out, const map<Tfirst, Tsecond>& container)
+{
     out << "{";
     Print(out, container);
     out << "}";
@@ -38,7 +43,8 @@ ostream& operator<<(ostream& out, const map<Tfirst, Tsecond>& container) {
 }
 
 template <typename T>
-void RunTestImpl(const T& func, const std::string& func_name) {
+void RunTestImpl(const T& func, const std::string& func_name) 
+{
     func();
     std::cerr << func_name << " OK!" << std::endl;
 }
@@ -46,7 +52,8 @@ void RunTestImpl(const T& func, const std::string& func_name) {
 #define RUN_TEST(func)  RunTestImpl((func), __FUNCTION__);
 template <typename T, typename U>
 void AssertEqualImpl(const T& t, const U& u, const string& t_str, const string& u_str, const string& file,
-    const string& func, unsigned line, const string& hint) {
+    const string& func, unsigned line, const string& hint)
+{
     if (t != u) {
         std::cerr << file << "("s << line << "): "s << func << ": "s;
         std::cerr << "ASSERT_EQUAL("s << t_str << ", "s << u_str << ") failed: "s;
@@ -65,11 +72,12 @@ void AssertEqualImpl(const T& t, const U& u, const string& t_str, const string& 
 
 
 void AssertImpl(bool value, const string& expr_str, const string& file, const string& func, unsigned line,
-    const string& hint) {
-    if (!value) {
+    const string& hint)
+{
+    if (!value)  {
         std::cerr << file << "("s << line << "): "s << func << ": "s;
         std::cerr << "ASSERT("s << expr_str << ") failed."s;
-        if (!hint.empty()) {
+        if (!hint.empty())  {
             std::cerr << " Hint: "s << hint;
         }
         std::cerr << std::endl;
@@ -86,12 +94,13 @@ void AssertImpl(bool value, const string& expr_str, const string& file, const st
 // that contains words from the document.
 // Stop word support.Stop words are excluded from the text of documents.
 
-void TestExcludeStopWordsFromAddedDocumentContent() {
+void TestExcludeStopWordsFromAddedDocumentContent() 
+{
     const int doc_id = 42;
     const string content = "cat in the city"s;
     const vector<int> ratings = { 1, 2, 3 };
     {
-        SearchServer server;
+        SearchServer server(""s);
         server.AddDocument(doc_id, content, DocumentStatus::ACTUAL, ratings);
         const auto found_docs = server.FindTopDocuments("in"s);
         ASSERT_EQUAL(found_docs.size(), 1u);
@@ -100,8 +109,7 @@ void TestExcludeStopWordsFromAddedDocumentContent() {
     }
 
     {
-        SearchServer server;
-        server.SetStopWords("in the"s);
+        SearchServer server("in the"s);
         server.AddDocument(doc_id, content, DocumentStatus::ACTUAL, ratings);
         ASSERT_HINT(server.FindTopDocuments("in"s).empty(), "Stop words must be excluded from documents"s);
     }
@@ -111,7 +119,8 @@ void TestExcludeStopWordsFromAddedDocumentContent() {
 // Documents containing negative keywords from a search term 
 // should not be included in search results.
 
-void TestMinusWords() {
+void TestMinusWords() 
+{
     const int doc_id1 = 42;
     const string content1 = "cat in the city"s;
     const vector<int> ratings1 = { 1, 2, 3 };
@@ -119,7 +128,7 @@ void TestMinusWords() {
     const string content2 = "cat in the village"s;
     const vector<int> ratings2 = { 3, 4, 5 };
     {
-        SearchServer server;
+        SearchServer server(""s);
         server.AddDocument(doc_id1, content1, DocumentStatus::ACTUAL, ratings1);
         server.AddDocument(doc_id2, content2, DocumentStatus::ACTUAL, ratings2);
 
@@ -138,8 +147,9 @@ void TestMinusWords() {
 // Returns all words from the search query that are present in the document.
 // If there is a match for at least one negative keyword, an empty wordlist should be returned.
 
-void TestMatching() {
-    SearchServer search_server;
+void TestMatching()
+{
+    SearchServer search_server(""s);
     search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
     search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
     search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
@@ -157,9 +167,9 @@ void TestMatching() {
 // be sorted in descending order of relevance.
 // Correct calculation of the relevance of the found documents.
 
-void TestRelevance() {
-    SearchServer search_server;
-    search_server.SetStopWords("and in on"s);
+void TestRelevance() 
+{
+    SearchServer search_server("and in on"s);
     search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
     search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
     search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
@@ -175,9 +185,9 @@ void TestRelevance() {
 // The rating of the added document is
 // the arithmetic mean of the document scores.
 
-void TestRating() {
-    SearchServer search_server;
-    search_server.SetStopWords("and in on"s);
+void TestRating() 
+{
+    SearchServer search_server("and in on"s);
     search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 }); //rate 2
     const auto found_docs0 = search_server.FindTopDocuments("cat"s);
     ASSERT_HINT((abs(found_docs0[0].rating - 2) < epsilon), "Incorrect rating calculation"s); //Rating check
@@ -197,9 +207,9 @@ void TestRating() {
 // user-defined.
 // Search for documents with a given status.
 
-void TestPredicate() {
-    SearchServer search_server;
-    search_server.SetStopWords("and in on"s);
+void TestPredicate() 
+{
+    SearchServer search_server("and in on"s);
     search_server.AddDocument(0, "white cat and fashion collar"s, DocumentStatus::ACTUAL, { 8, -3 });
     search_server.AddDocument(1, "fluffy cat fluffy tail"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
     search_server.AddDocument(2, "well-groomed dog expressive eyes"s, DocumentStatus::ACTUAL, { 5, -12, 2, 1 });
@@ -207,7 +217,7 @@ void TestPredicate() {
     search_server.AddDocument(4, "uncle Styopa policeman"s, DocumentStatus::BANNED, { 19,2 });
     set <int> actual;
     set <int> actual_input = { 0,1,2 };
-    for (const Document& document : search_server.FindTopDocuments("fluffy well-groomed cat uncle Styopa"s, DocumentStatus::ACTUAL)) {
+    for (const Document& document : search_server.FindTopDocuments("fluffy well-groomed cat uncle Styopa"s, DocumentStatus::ACTUAL)){
         actual.insert(document.id);
     }
     ASSERT_EQUAL_HINT(actual, actual_input, "Invalid sampling by ACTUAL status"s);
@@ -232,7 +242,8 @@ void TestPredicate() {
 }
 
 
-void TestSearchServer() {
+void TestSearchServer() 
+{
     RUN_TEST(TestExcludeStopWordsFromAddedDocumentContent);
     RUN_TEST(TestMatching);
     RUN_TEST(TestMinusWords);
