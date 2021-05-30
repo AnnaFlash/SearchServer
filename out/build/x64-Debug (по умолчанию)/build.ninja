@@ -50,6 +50,13 @@ build CMakeFiles\Final_project_plus_Test.dir\Final_project_plus_Test.cpp.obj: CX
   TARGET_COMPILE_PDB = CMakeFiles\Final_project_plus_Test.dir\
   TARGET_PDB = Final_project_plus_Test.pdb
 
+build CMakeFiles\Final_project_plus_Test.dir\Request.cpp.obj: CXX_COMPILER__Final_project_plus_Test_Debug ..\..\..\Request.cpp || cmake_object_order_depends_target_Final_project_plus_Test
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
+  OBJECT_DIR = CMakeFiles\Final_project_plus_Test.dir
+  OBJECT_FILE_DIR = CMakeFiles\Final_project_plus_Test.dir
+  TARGET_COMPILE_PDB = CMakeFiles\Final_project_plus_Test.dir\
+  TARGET_PDB = Final_project_plus_Test.pdb
+
 build CMakeFiles\Final_project_plus_Test.dir\Search_server.cpp.obj: CXX_COMPILER__Final_project_plus_Test_Debug ..\..\..\Search_server.cpp || cmake_object_order_depends_target_Final_project_plus_Test
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
   OBJECT_DIR = CMakeFiles\Final_project_plus_Test.dir
@@ -72,7 +79,7 @@ build CMakeFiles\Final_project_plus_Test.dir\Tests.cpp.obj: CXX_COMPILER__Final_
 #############################################
 # Link the executable Final_project_plus_Test.exe
 
-build Final_project_plus_Test.exe: CXX_EXECUTABLE_LINKER__Final_project_plus_Test_Debug CMakeFiles\Final_project_plus_Test.dir\Final_project_plus_Test.cpp.obj CMakeFiles\Final_project_plus_Test.dir\Search_server.cpp.obj CMakeFiles\Final_project_plus_Test.dir\Tests.cpp.obj
+build Final_project_plus_Test.exe: CXX_EXECUTABLE_LINKER__Final_project_plus_Test_Debug CMakeFiles\Final_project_plus_Test.dir\Final_project_plus_Test.cpp.obj CMakeFiles\Final_project_plus_Test.dir\Request.cpp.obj CMakeFiles\Final_project_plus_Test.dir\Search_server.cpp.obj CMakeFiles\Final_project_plus_Test.dir\Tests.cpp.obj
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib

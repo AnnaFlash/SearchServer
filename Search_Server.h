@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "headers.h"
+#include "Log_duration.h"
 using namespace std;
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 const double epsilon = 1e-6;
@@ -68,21 +69,24 @@ public:
     template <typename Func>
     vector<Document> FindTopDocuments(const string& raw_query, const Func& func) const
     {
-        const Query query = ParseQuery(raw_query);
-        auto matched_documents = FindAllDocuments(query, func);
-        sort(matched_documents.begin(), matched_documents.end(),
-            [](const Document& lhs, const Document& rhs)  {
-                if (abs(lhs.relevance - rhs.relevance) < epsilon)  {
-                    return lhs.rating > rhs.rating;
-                }
-                else  {
-                    return lhs.relevance > rhs.relevance;
-                }
-            });
-        if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT)  {
-            matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
+        {
+            LOG_DURATION_STREAM("Find", cout);
+            const Query query = ParseQuery(raw_query);
+            auto matched_documents = FindAllDocuments(query, func);
+            sort(matched_documents.begin(), matched_documents.end(),
+                [](const Document& lhs, const Document& rhs) {
+                    if (abs(lhs.relevance - rhs.relevance) < epsilon) {
+                        return lhs.rating > rhs.rating;
+                    }
+                    else {
+                        return lhs.relevance > rhs.relevance;
+                    }
+                });
+            if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT) {
+                matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
+            }
+            return matched_documents;
         }
-        return matched_documents;
     }
     tuple<vector<string>, DocumentStatus> MatchDocument(const string& raw_query, int document_id) const;
 private:
@@ -92,6 +96,7 @@ private:
     };
     set<string> stop_words_;
     map<string, map<int, double>> word_to_document_freqs_;
+    //map<int, map<string, double>> word_to_document_freqs_;
     map<int, DocumentData> documents_;
     vector<int> document_ids_;
     bool IsStopWord(const string& word) const;

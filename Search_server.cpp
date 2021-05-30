@@ -48,24 +48,27 @@ SearchServer::SearchServer(const string& stop_words_text)
 void SearchServer::AddDocument(int document_id, const string& document,
     const DocumentStatus& status, const vector<int>& ratings)
 {
-    if (document_id < 0) {
-        throw invalid_argument("try to add document with negative id");
-    }
-    if (documents_.count(document_id) > 0) {
-        throw invalid_argument("duplicate id");
-    }
+    {
+        LOG_DURATION_STREAM("Add", cout);
+        if (document_id < 0) {
+            throw invalid_argument("try to add document with negative id");
+        }
+        if (documents_.count(document_id) > 0) {
+            throw invalid_argument("duplicate id");
+        }
 
-    const vector<string> words = SplitIntoWordsNoStop(document);
-    const double inv_word_count = 1.0 / words.size();
-    for (const string& word : words) {
-        word_to_document_freqs_[word][document_id] += inv_word_count;
+        const vector<string> words = SplitIntoWordsNoStop(document);
+        const double inv_word_count = 1.0 / words.size();
+        for (const string& word : words) {
+            word_to_document_freqs_[word][document_id] += inv_word_count;
+        }
+        documents_.emplace(document_id,
+            DocumentData{
+                ComputeAverageRating(ratings),
+                status
+            });
+        document_ids_.push_back(document_id);
     }
-    documents_.emplace(document_id,
-        DocumentData{
-            ComputeAverageRating(ratings),
-            status
-        });
-    document_ids_.push_back(document_id);
 }
 
 
@@ -86,26 +89,30 @@ int SearchServer::GetDocumentId(int index) const
 }
 tuple<vector<string>, DocumentStatus> SearchServer::MatchDocument(const string& raw_query, int document_id) const 
 {
-    const Query query = ParseQuery(raw_query);
-    vector<string> matched_words;
-    for (const string& word : query.plus_words) {
-        if (word_to_document_freqs_.count(word) == 0) {
-            continue;
+    {
+        LOG_DURATION_STREAM("Match", cout);
+        const Query query = ParseQuery(raw_query);
+        vector<string> matched_words;
+        for (const string& word : query.plus_words) {
+            if (word_to_document_freqs_.count(word) == 0) {
+                continue;
+            }
+            if (word_to_document_freqs_.at(word).count(document_id)) {
+                matched_words.push_back(word);
+            }
         }
-        if (word_to_document_freqs_.at(word).count(document_id)) {
-            matched_words.push_back(word);
+        for (const string& word : query.minus_words) {
+            if (word_to_document_freqs_.count(word) == 0) {
+                continue;
+            }
+            if (word_to_document_freqs_.at(word).count(document_id)) {
+                matched_words.clear();
+                break;
+            }
         }
+
+        return { matched_words, documents_.at(document_id).status };
     }
-    for (const string& word : query.minus_words) {
-        if (word_to_document_freqs_.count(word) == 0) {
-            continue;
-        }
-        if (word_to_document_freqs_.at(word).count(document_id)) {
-            matched_words.clear();
-            break;
-        }
-    }
-    return { matched_words, documents_.at(document_id).status };
 }
 
     //private
