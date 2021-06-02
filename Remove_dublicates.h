@@ -2,25 +2,22 @@
 #include "search_server.h"
 void RemoveDuplicates(SearchServer& search_server) {
     set<int> badids;
-    set<string> ids_string;
-    set<string> jds_string;
-    for (auto ids = search_server.begin(); ids != search_server.end(); ids++) {
-        for (auto& _ : search_server.GetWordFrequencies(*ids)) {
-            ids_string.insert(_.first);
+    set<set<string>> words;
+    set<string> doc;
+    map<string, double> w_freq;
+    for (const int& ids : search_server) {
+        w_freq = search_server.GetWordFrequencies(ids);
+        transform(w_freq.begin(), w_freq.end(),
+            inserter(doc, begin(doc)), [](const auto& arg) {return arg.first; });
+        if (words.count(doc) != 0) {
+            badids.insert(ids);
         }
-        for (auto jds = ids; jds != search_server.end(); jds++) {
-            if (ids == jds) { continue; }
-            if (search_server.GetWordFrequencies(*jds).size() > ids_string.size()) { break; }
-            for (auto& _ : search_server.GetWordFrequencies(*jds)) {
-                jds_string.insert(_.first);
-            }
-            if (ids_string == jds_string) {
-                badids.insert((*ids > *jds ? *ids : *jds));
-            }
-            jds_string.clear();
+        else {
+            words.insert(doc);
         }
-        ids_string.clear();
+        doc.clear();
     }
+
     for (const int& ids : badids) {
         cout << "Found duplicate document id " << ids << endl;
         search_server.RemoveDocument(ids);
