@@ -6,7 +6,7 @@
 #define PROFILE_CONCAT_INTERNAL(X, Y) X##Y
 #define PROFILE_CONCAT(X, Y) PROFILE_CONCAT_INTERNAL(X, Y)
 #define UNIQUE_VAR_NAME_PROFILE PROFILE_CONCAT(profileGuard, __LINE__)
-#define LOG_DURATION_STREAM(a, out) LogDuration(a, out)
+#define LOG_DURATION_STREAM(a, out) LogDuration UNIQUE_VAR_NAME_PROFILE(a, out)
 class LogDuration {
 public:
     using Clock = std::chrono::steady_clock;
