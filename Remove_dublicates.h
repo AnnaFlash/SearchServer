@@ -1,5 +1,7 @@
 #pragma once
 #include "search_server.h"
+#include <iterator>
+#include <execution>
 void RemoveDuplicates(SearchServer& search_server) {
     set<int> badids;
     set<set<string>> words;

@@ -61,12 +61,13 @@ public:
     }
     explicit SearchServer();
     explicit SearchServer(const string& stop_words_text);
-    void AddDocument(int document_id, const string& document, const DocumentStatus& status, const vector<int>& ratings);
-    vector<Document> FindTopDocuments(const string& raw_query, const DocumentStatus& status) const;
-    vector<Document> FindTopDocuments(const string& raw_query) const;
+    explicit SearchServer(const string_view stop_words_text);
+    void AddDocument(int document_id, const string_view document, const DocumentStatus& status, const vector<int>& ratings);
+    vector<Document> FindTopDocuments(const string_view raw_query, const DocumentStatus& status) const;
+    vector<Document> FindTopDocuments(const string_view raw_query) const;
 
     template <typename Func>
-    vector<Document> FindTopDocuments(const string& raw_query, const Func& func) const
+    vector<Document> FindTopDocuments(const string_view raw_query, const Func& func) const
     {
         const Query query = ParseQuery(raw_query);
         auto matched_documents = FindAllDocuments(query, func);
@@ -85,7 +86,9 @@ public:
         return matched_documents;
     }
 
-    tuple<vector<string>, DocumentStatus> MatchDocument(const string& raw_query, int document_id) const;
+    tuple<vector<string_view>, DocumentStatus> MatchDocument(const string_view raw_query, int document_id) const;
+    tuple<vector<string_view>, DocumentStatus> MatchDocument(std::execution::sequenced_policy seq, const string_view raw_query, int document_id) const;
+    tuple<vector<string_view>, DocumentStatus> MatchDocument(std::execution::parallel_policy par, const string_view raw_query, int document_id) const;
     auto begin()
     {
         return document_ids_.begin();
@@ -105,7 +108,7 @@ public:
     {
         return document_ids_.end();
     }
-    const map<string, double> GetWordFrequencies(int document_id) const;
+    const map<string_view, double> GetWordFrequencies(int document_id) const;
     void RemoveDocument(int document_id);
     size_t GetDocumentCount() const
     {
@@ -122,7 +125,7 @@ private:
     set<int> document_ids_;
     bool IsStopWord(const string& word) const;
     static bool IsValidWord(const string& word);
-    vector<string> SplitIntoWordsNoStop(const string& text) const;
+    vector<string> SplitIntoWordsNoStop(const string_view text) const;
     static int ComputeAverageRating(const vector<int>& ratings);
     struct QueryWord {
         string data;
@@ -134,7 +137,8 @@ private:
         set<string> plus_words;
         set<string> minus_words;
     };
-    Query ParseQuery(const string& text) const;
+    Query ParseQuery(const string_view text) const;
+    Query ParseQuery(std::execution::parallel_policy,const string_view text) const;
 
     template <typename Func>
     vector<Document>FindAllDocuments(const Query& query, const Func& func) const
@@ -150,6 +154,7 @@ private:
                     id_tdf[id_w_fr.first][word] = id_w_fr.second.at(word);
                 }
             }
+
         }
         for (const auto& [document_id, w_fr] : id_tdf) {
             if (func(document_id, documents_.at(document_id).status, documents_.at(document_id).rating)) {
@@ -170,15 +175,19 @@ private:
             }
             badid >= 0 ? document_to_relevance.erase(badid) : badid = -1;
         }
-        vector<Document> matched_documents;
-        for (const auto& [document_id, relevance] : document_to_relevance) {
-            matched_documents.push_back({
-                document_id,
-                relevance,
-                documents_.at(document_id).rating
-                });
-        }
+        vector<Document> matched_documents(document_to_relevance.size());
+        transform(std::execution::par, document_to_relevance.begin(), document_to_relevance.end(), matched_documents.begin(),
+            [&](pair<int, double> id_rel) {
+                return Document(id_rel.first, id_rel.second, documents_.at(id_rel.first).rating);
+            });
         return matched_documents;
     }
 };
 
+        //for (const auto& [document_id, relevance] : document_to_relevance) {
+        //    matched_documents.push_back({
+        //        document_id,
+        //        relevance,
+        //        documents_.at(document_id).rating
+        //        });
+        //}

@@ -1,15 +1,18 @@
 ﻿// Final_project_plus_Test.cpp: определяет точку входа для приложения.
 //
 
+#include "process_queries.h"
+#include "log_duration.h"
+#include <iostream>
+#include <random>
+#include <string>
+#include <vector>
 #include "Tests.h"
-#include "Paginator.h"
-#include "Request.h"
-#include "Remove_dublicates.h"
 using namespace std;
 
+using namespace std;
 
-ostream& operator<<(ostream& out, const Document& document)
-{
+ostream& operator<<(ostream& out, const Document& document) {
     out << "{ "s
         << "document_id = "s << document.id << ", "s
         << "relevance = "s << document.relevance << ", "s
@@ -17,31 +20,20 @@ ostream& operator<<(ostream& out, const Document& document)
     return out;
 }
 
-template <typename Iterator>
-ostream& operator<<(ostream& out, const IteratorRange<Iterator>& range)
-{
 
-    for (auto it = range.begin(); it != range.end(); ++it) {
-        cout << *it;
-    }
-
-    return out;
-}
-
-void PrintMatchDocumentResult(int document_id, const vector<string>& words, DocumentStatus status)
-{
+void PrintMatchDocumentResult(int document_id, const vector<string_view> words, DocumentStatus status) {
     cout << "{ "s
         << "document_id = "s << document_id << ", "s
         << "status = "s << static_cast<int>(status) << ", "s
         << "words ="s;
-    for (const string& word : words) {
+    for (const auto word : words) {
         cout << ' ' << word;
     }
     cout << "}"s << endl;
 }
-void AddDocument(SearchServer& search_server, int document_id,
-    const string& document, DocumentStatus status, const vector<int>& ratings)
-{
+
+void AddDocument(SearchServer& search_server, int document_id, const string& document, DocumentStatus status,
+    const vector<int>& ratings) {
     try {
         search_server.AddDocument(document_id, document, status, ratings);
     }
@@ -49,66 +41,72 @@ void AddDocument(SearchServer& search_server, int document_id,
         cout << "Ошибка добавления документа "s << document_id << ": "s << e.what() << endl;
     }
 }
-void FindTopDocuments(const SearchServer& search_server, const string& raw_query)
-{
+
+void FindTopDocuments(const SearchServer& search_server, const string& raw_query) {
     cout << "Результаты поиска по запросу: "s << raw_query << endl;
     try {
         for (const Document& document : search_server.FindTopDocuments(raw_query)) {
-            cout << document << endl;
+            cout << document <<endl;
         }
     }
     catch (const exception& e) {
         cout << "Ошибка поиска: "s << e.what() << endl;
     }
 }
+
 void MatchDocuments(const SearchServer& search_server, const string& query)
 {
     try {
         cout << "Матчинг документов по запросу: "s << query << endl;
         for (const int ids : search_server) {
             const auto [words, status] = search_server.MatchDocument(query, ids);
-            PrintMatchDocumentResult(ids, words, status);
+            PrintMatchDocumentResult(ids, (words), status);
         }
     }
     catch (const exception& e) {
         cout << "Ошибка матчинга документов на запрос "s << query << ": "s << e.what() << endl;
     }
 }
+void gen_random(string& s, const int len) {
+    static const char alphanum[] =
+        "A BCDE F G H IJKLMNOPQRSTUVWXYZ"
+        "abcdefg h i j k l m n o pqrstuvwxyz";
 
-template <typename Container>
-auto Paginate(const Container& c, size_t page_size)
-{
-    return Paginator(begin(c), end(c), page_size);
+    for (int i = 0; i < len; ++i) {
+        s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+
+    s[len] = 0;
 }
+
 int main() {
-    //TestSearchServer();
     SearchServer search_server("and with"s);
 
-    AddDocument(search_server, 1, "funny pet and nasty rat"s, DocumentStatus::ACTUAL, { 7, 2, 7 });
-    AddDocument(search_server, 2, "funny pet with curly hair"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-    // дубликат документа 2, будет удалён
-    AddDocument(search_server, 3, "funny pet with curly hair"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-    // отличие только в стоп-словах, считаем дубликатом
-    AddDocument(search_server, 4, "funny pet and curly hair"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-    // множество слов такое же, считаем дубликатом документа 1
-    AddDocument(search_server, 5, "funny funny pet and nasty nasty rat"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-    // добавились новые слова, дубликатом не является
-    AddDocument(search_server, 6, "funny pet and not very nasty rat"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-    // множество слов такое же, как в id 6, несмотря на другой порядок, считаем дубликатом
-    AddDocument(search_server, 7, "very nasty rat and not very funny pet"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-    // есть не все слова, не является дубликатом
-    AddDocument(search_server, 8, "pet with rat and rat and rat"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-    // слова из разных документов, не является дубликатом
-    AddDocument(search_server, 9, "nasty rat with curly hair"s, DocumentStatus::ACTUAL, { 1, 2 });
-
-    cout << "Before duplicates removed: "s << search_server.GetDocumentCount() << endl;
-    RemoveDuplicates(search_server);
-    cout << "After duplicates removed: "s << search_server.GetDocumentCount() << endl;
+    int id = 0;
+    for (
+        const string& text : {
+            "funny pet and nasty rat"s,
+            "funny pet with curly hair"s,
+            "funny pet and not very nasty rat"s,
+            "pet with rat and rat and rat"s,
+            "nasty rat with curly hair"s,
+        }
+        ) {
+        search_server.AddDocument(++id, text, DocumentStatus::ACTUAL, { 1, 2 });
+    }
+    int n = 25;
+    string s = { "                         " };
+    for (size_t i = 0; i < 10; i++) {
+        gen_random(s, n);
+        search_server.AddDocument(i + 6, s, DocumentStatus::ACTUAL, { 1 });
+    }
+   FindTopDocuments(search_server, "cat funny pet nasty rat");
+   MatchDocuments(search_server, "cat");
+    map<string_view, double> a = search_server.GetWordFrequencies(3);
+    for (auto& [words, freq] : a) {
+        cout << words << " " << freq << endl;
+    }
+   // const string query = "curly and funny -not"s;
+    TestSearchServer();
+    return 0;
 }
