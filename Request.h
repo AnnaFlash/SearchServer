@@ -7,7 +7,7 @@ public:
     template <typename DocumentPredicate>
     vector<Document> AddFindRequest(const string& raw_query, DocumentPredicate document_predicate);
 
-    vector<Document> AddFindRequest(const string& raw_query, DocumentStatus status);
+    vector<Document> AddFindRequest(const string& raw_query,const DocumentStatus status);
 
     vector<Document> AddFindRequest(const string& raw_query);
 

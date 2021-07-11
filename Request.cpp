@@ -11,7 +11,7 @@ vector<Document> RequestQueue::AddFindRequest(const string& raw_query, DocumentP
 	return result;
 }
 
-vector<Document> RequestQueue::AddFindRequest(const string& raw_query, DocumentStatus status)
+vector<Document> RequestQueue::AddFindRequest(const string& raw_query,const DocumentStatus status)
 {
 
 	vector<Document> result = (*search_server_).FindTopDocuments(raw_query, status);

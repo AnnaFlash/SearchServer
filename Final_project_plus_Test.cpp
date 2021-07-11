@@ -10,7 +10,6 @@
 #include "Tests.h"
 using namespace std;
 
-using namespace std;
 
 ostream& operator<<(ostream& out, const Document& document) {
     out << "{ "s
@@ -45,7 +44,7 @@ void AddDocument(SearchServer& search_server, int document_id, const string& doc
 void FindTopDocuments(const SearchServer& search_server, const string& raw_query) {
     cout << "Результаты поиска по запросу: "s << raw_query << endl;
     try {
-        for (const Document& document : search_server.FindTopDocuments(raw_query)) {
+        for (const Document& document : search_server.FindTopDocuments(std::execution::par, raw_query)) {
             cout << document <<endl;
         }
     }
@@ -59,7 +58,7 @@ void MatchDocuments(const SearchServer& search_server, const string& query)
     try {
         cout << "Матчинг документов по запросу: "s << query << endl;
         for (const int ids : search_server) {
-            const auto [words, status] = search_server.MatchDocument(query, ids);
+            const auto [words, status] = search_server.MatchDocument(std::execution::par, query, ids);
             PrintMatchDocumentResult(ids, (words), status);
         }
     }
@@ -85,8 +84,8 @@ int main() {
     int id = 0;
     for (
         const string& text : {
-            "funny pet and nasty rat"s,
-            "funny pet with curly hair"s,
+            "cat funny and nasty rat"s,
+            "funny with curly hair"s,
             "funny pet and not very nasty rat"s,
             "pet with rat and rat and rat"s,
             "nasty rat with curly hair"s,
@@ -94,18 +93,23 @@ int main() {
         ) {
         search_server.AddDocument(++id, text, DocumentStatus::ACTUAL, { 1, 2 });
     }
-    int n = 25;
-    string s = { "                         " };
-    for (size_t i = 0; i < 10; i++) {
-        gen_random(s, n);
-        search_server.AddDocument(i + 6, s, DocumentStatus::ACTUAL, { 1 });
-    }
-   FindTopDocuments(search_server, "cat funny pet nasty rat");
-   MatchDocuments(search_server, "cat");
+    //int n = 25;
+    //string s = { "                         " };
+    //for (size_t i = 0; i < 10; i++) {
+    //    gen_random(s, n);
+    //    search_server.AddDocument(i + 6, s, DocumentStatus::ACTUAL, { 1 });
+    //}
+    search_server.AddDocument(6, "cat", DocumentStatus::ACTUAL, { 1, 2 });
+    search_server.FindTopDocuments("fluffy well-groomed cat uncle Styopa"s, [](int document_id, DocumentStatus status, int rating) { return rating > 2; });
+    search_server.FindTopDocuments("", DocumentStatus::ACTUAL);
+    FindTopDocuments(search_server, "-cat funny -pet nasty rat");
+  /* DocumentStatus status = DocumentStatus::ACTUAL;
+   search_server.FindTopDocuments("", DocumentStatus::ACTUAL);*/
+   /*MatchDocuments(search_server, "cat nasty -hair");
     map<string_view, double> a = search_server.GetWordFrequencies(3);
     for (auto& [words, freq] : a) {
         cout << words << " " << freq << endl;
-    }
+    }*/
    // const string query = "curly and funny -not"s;
     TestSearchServer();
     return 0;

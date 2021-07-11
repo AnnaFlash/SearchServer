@@ -30,9 +30,9 @@ template <typename StringContainer>
 set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings)
 {
     set<string> non_empty_strings;
-    for (const string& str : strings) {
+    for (const auto& str : strings) {
         if (!str.empty()) {
-            non_empty_strings.insert(str);
+            non_empty_strings.insert(string(str));
         }
     }
     return non_empty_strings;
@@ -63,11 +63,9 @@ public:
     explicit SearchServer(const string& stop_words_text);
     explicit SearchServer(const string_view stop_words_text);
     void AddDocument(int document_id, const string_view document, const DocumentStatus& status, const vector<int>& ratings);
-    vector<Document> FindTopDocuments(const string_view raw_query, const DocumentStatus& status) const;
-    vector<Document> FindTopDocuments(const string_view raw_query) const;
 
     template <typename Func>
-    vector<Document> FindTopDocuments(const string_view raw_query, const Func& func) const
+    vector<Document> FindTopDocuments(string_view raw_query, const Func& func) const
     {
         const Query query = ParseQuery(raw_query);
         auto matched_documents = FindAllDocuments(query, func);
@@ -86,6 +84,61 @@ public:
         return matched_documents;
     }
 
+    template <typename ExecutionPolicy, typename DocumentPredicate>
+    std::vector<Document> FindTopDocuments(const ExecutionPolicy& policy, std::string_view raw_query, DocumentPredicate document_predicate) const {
+        if constexpr (is_same_v<ExecutionPolicy, execution::sequenced_policy>) {
+            return FindTopDocumentsSeq(raw_query, document_predicate);
+        }
+        else {
+            return FindTopDocumentsPar(policy, raw_query, document_predicate);
+        }
+    }
+
+    vector<Document> FindTopDocuments(string_view raw_query, const DocumentStatus& status) const;//**
+
+    template <typename ExecutionPolicy>
+    std::vector<Document> FindTopDocuments(const ExecutionPolicy& policy, std::string_view raw_query,const DocumentStatus status) const { //**
+        if constexpr (is_same_v<ExecutionPolicy, execution::sequenced_policy>) {
+            return FindTopDocuments(raw_query, status);
+        }
+        else {
+            return FindTopDocumentsPar(policy, raw_query, [status](int document_id, DocumentStatus statuss, int rating)
+                { return statuss == status; });
+        }
+    }
+
+    vector<Document> FindTopDocuments(string_view raw_query) const; //*
+
+    template <typename ExecutionPolicy>
+    std::vector<Document> FindTopDocuments(ExecutionPolicy& policy, std::string_view raw_query) const { //*
+        if constexpr (is_same_v<ExecutionPolicy, execution::sequenced_policy>) {
+            return FindTopDocuments(raw_query);
+        }
+        else {
+            return FindTopDocumentsPar(policy, raw_query, [](int document_id, DocumentStatus status, int rating)
+                { return status == DocumentStatus::ACTUAL; });
+        }
+    }
+    
+    template <typename DocumentPredicate>
+    std::vector<Document> FindTopDocumentsPar(const std::execution::parallel_policy& par, std::string_view raw_query, DocumentPredicate document_predicate) const {
+        const Query query = ParseQuery(par, raw_query);
+        auto matched_documents = FindAllDocuments(par, query, document_predicate);
+        sort(matched_documents.begin(), matched_documents.end(),
+            [](const Document& lhs, const Document& rhs) {
+                if (abs(lhs.relevance - rhs.relevance) < epsilon) {
+                    return lhs.rating > rhs.rating;
+                }
+                else {
+                    return lhs.relevance > rhs.relevance;
+                }
+            });
+        if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT) {
+            matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
+        }
+        return matched_documents;
+    }
+      
     tuple<vector<string_view>, DocumentStatus> MatchDocument(const string_view raw_query, int document_id) const;
     tuple<vector<string_view>, DocumentStatus> MatchDocument(std::execution::sequenced_policy seq, const string_view raw_query, int document_id) const;
     tuple<vector<string_view>, DocumentStatus> MatchDocument(std::execution::parallel_policy par, const string_view raw_query, int document_id) const;
@@ -110,6 +163,8 @@ public:
     }
     const map<string_view, double> GetWordFrequencies(int document_id) const;
     void RemoveDocument(int document_id);
+    void RemoveDocument(const std::execution::sequenced_policy&, int document_id);
+    void RemoveDocument(const std::execution::parallel_policy&, int document_id);
     size_t GetDocumentCount() const
     {
         return documents_.size();
@@ -134,24 +189,25 @@ private:
     };
     QueryWord ParseQueryWord(string text) const;
     struct Query {
-        set<string> plus_words;
-        set<string> minus_words;
+        set<string, less<>> plus_words;
+        set<string, less<>> minus_words;
     };
     Query ParseQuery(const string_view text) const;
     Query ParseQuery(std::execution::parallel_policy,const string_view text) const;
+    Query ParseQuery(std::execution::sequenced_policy, const string_view text) const;
 
     template <typename Func>
     vector<Document>FindAllDocuments(const Query& query, const Func& func) const
     {
         map<int, double> document_to_relevance;
-        map<string, int> id_idf;
-        map<int, map<string, double>> id_tdf;
+        map<string_view, int> id_idf;
+        map<int, map<string_view, double>> id_tdf;
         // prepare tf-idf
         for (const auto& id_w_fr : word_to_document_freqs_) {
-            for (const string& word : query.plus_words) {
-                if (id_w_fr.second.count(word)) {
+            for (const auto& word : query.plus_words) {
+                if (id_w_fr.second.count(string(word))) {
                     id_idf[word] += 1;
-                    id_tdf[id_w_fr.first][word] = id_w_fr.second.at(word);
+                    id_tdf[id_w_fr.first][word] = id_w_fr.second.at(string(word));
                 }
             }
 
@@ -167,8 +223,8 @@ private:
         // erase documents with minus words
         int badid = -1;
         for (const auto& id_w_fr : word_to_document_freqs_) {
-            for (const string& word : query.minus_words) {
-                if (id_w_fr.second.count(word)) {
+            for (const auto& word : query.minus_words) {
+                if (id_w_fr.second.count(string(word))) {
                     badid = id_w_fr.first;
                     break;
                 }
@@ -177,6 +233,60 @@ private:
         }
         vector<Document> matched_documents(document_to_relevance.size());
         transform(std::execution::par, document_to_relevance.begin(), document_to_relevance.end(), matched_documents.begin(),
+            [&](pair<int, double> id_rel) {
+                return Document(id_rel.first, id_rel.second, documents_.at(id_rel.first).rating);
+            });
+        return matched_documents;
+    }
+
+    template <typename DocumentPredicate>
+    std::vector<Document> FindAllDocuments(const std::execution::sequenced_policy&, const Query& query, DocumentPredicate document_predicate) const {
+        return FindAllDocuments(query, document_predicate);
+    }
+
+    template <typename DocumentPredicate>
+    std::vector<Document> FindAllDocuments(const std::execution::parallel_policy& par, const Query& query, DocumentPredicate document_predicate) const {
+        map<int, double> document_to_relevance;
+        map<string_view, int> id_idf;
+        map<int, map<string_view, double>> id_tdf;
+        // prepare tf-idf
+        std::mutex mtx;
+        for_each(par, word_to_document_freqs_.begin(), word_to_document_freqs_.end(), [&](const auto& id_w_fr) 
+            {
+                for_each(par, query.plus_words.begin(), query.plus_words.end(), [&](const auto& word) 
+                    {
+                        if (id_w_fr.second.count(string(word))) {
+                            id_idf[word] += 1;
+                            id_tdf[id_w_fr.first][word] = id_w_fr.second.at(string(word));
+                        }
+                    });
+            });  
+
+        for_each(par, id_tdf.begin(), id_tdf.end(), [&](const auto& id_w_fr) 
+            {
+                if (document_predicate(id_w_fr.first, documents_.at(id_w_fr.first).status, documents_.at(id_w_fr.first).rating)) {
+                    for_each(par, id_w_fr.second.begin(), id_w_fr.second.end(), [&](const auto& word)
+                        {
+                            document_to_relevance[id_w_fr.first] +=
+                                (static_cast<double>(log(document_ids_.size() * 1.0 / static_cast<double>(id_idf.at(word.first)))) * word.second);
+                        });
+                }
+            });
+        // erase documents with minus words
+
+        for_each(par, word_to_document_freqs_.begin(), word_to_document_freqs_.end(), [&](const auto& id_w_fr) 
+            {
+                int badid = -1;
+                for_each(par, query.minus_words.begin(), query.minus_words.end(), [&](const auto& word) 
+                    {
+                        if (id_w_fr.second.count(string(word))) {
+                            badid = id_w_fr.first;
+                        }
+                    });
+                badid >= 0 ? document_to_relevance.erase(badid) : badid = -1;
+            });
+        vector<Document> matched_documents(document_to_relevance.size());
+        transform(par, document_to_relevance.begin(), document_to_relevance.end(), matched_documents.begin(),
             [&](pair<int, double> id_rel) {
                 return Document(id_rel.first, id_rel.second, documents_.at(id_rel.first).rating);
             });
