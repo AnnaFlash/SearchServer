@@ -1,5 +1,5 @@
 ﻿#include "Search_Server.h"
-
+mutex global_mutex;
 string ReadLine()
 {
     string s;
@@ -87,6 +87,7 @@ void SearchServer::AddDocument(int document_id, const string_view document,
 
 tuple<vector<string_view>, DocumentStatus> SearchServer::MatchDocument(const string_view raw_query, int document_id) const
 {
+    lock_guard<mutex> guard(global_mutex);
     const Query query = ParseQuery(raw_query);
     vector<string_view> matched_words;
     if (word_to_document_freqs_.count(document_id)) {
@@ -114,6 +115,7 @@ tuple<vector<string_view>, DocumentStatus> SearchServer::MatchDocument(std::exec
 }
 tuple<vector<string_view>, DocumentStatus> SearchServer::MatchDocument(std::execution::parallel_policy par, const string_view raw_query, int document_id) const
 {
+    lock_guard<mutex> guard(global_mutex);
     const Query query = ParseQuery(par, raw_query);
     vector<string_view> matched_words;
     if (word_to_document_freqs_.count(document_id)) {
@@ -148,6 +150,7 @@ const map<string_view, double> SearchServer::GetWordFrequencies(int document_id)
 
 void SearchServer::RemoveDocument(int document_id)
 {
+    lock_guard<mutex> guard(global_mutex);
     word_to_document_freqs_.erase(document_id);
     documents_.erase(document_id);
     document_ids_.erase(document_id);

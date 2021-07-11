@@ -4,6 +4,7 @@
 using namespace std;
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 const double epsilon = 1e-6;
+extern mutex global_mutex;
 struct Document {
     int id;
     double relevance;
@@ -199,6 +200,7 @@ private:
     template <typename Func>
     vector<Document>FindAllDocuments(const Query& query, const Func& func) const
     {
+        lock_guard<mutex> guard(global_mutex);
         map<int, double> document_to_relevance;
         map<string_view, int> id_idf;
         map<int, map<string_view, double>> id_tdf;
@@ -246,16 +248,18 @@ private:
 
     template <typename DocumentPredicate>
     std::vector<Document> FindAllDocuments(const std::execution::parallel_policy& par, const Query& query, DocumentPredicate document_predicate) const {
+        lock_guard<mutex> guard(global_mutex);
         map<int, double> document_to_relevance;
         map<string_view, int> id_idf;
         map<int, map<string_view, double>> id_tdf;
         // prepare tf-idf
-        std::mutex mtx;
+        std::mutex local_mutex;
         for_each(par, word_to_document_freqs_.begin(), word_to_document_freqs_.end(), [&](const auto& id_w_fr) 
             {
                 for_each(par, query.plus_words.begin(), query.plus_words.end(), [&](const auto& word) 
                     {
                         if (id_w_fr.second.count(string(word))) {
+                            lock_guard<mutex> local_guard(local_mutex);
                             id_idf[word] += 1;
                             id_tdf[id_w_fr.first][word] = id_w_fr.second.at(string(word));
                         }
@@ -267,6 +271,7 @@ private:
                 if (document_predicate(id_w_fr.first, documents_.at(id_w_fr.first).status, documents_.at(id_w_fr.first).rating)) {
                     for_each(par, id_w_fr.second.begin(), id_w_fr.second.end(), [&](const auto& word)
                         {
+                            lock_guard<mutex> local_guard(local_mutex);
                             document_to_relevance[id_w_fr.first] +=
                                 (static_cast<double>(log(document_ids_.size() * 1.0 / static_cast<double>(id_idf.at(word.first)))) * word.second);
                         });
