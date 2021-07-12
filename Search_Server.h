@@ -40,7 +40,6 @@ set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings)
 
 class SearchServer {
 public:
-    mutable mutex global_mutex;
     // Defines an invalid document id
 // You can refer this constant as SearchServer::INVALID_DOCUMENT_ID
     inline static constexpr int INVALID_DOCUMENT_ID = -1;
@@ -171,6 +170,7 @@ public:
         return documents_.size();
     }
 private:
+    mutable mutex global_mutex;
     struct DocumentData {
         int rating;
         DocumentStatus status;
