@@ -4,7 +4,6 @@
 using namespace std;
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 const double epsilon = 1e-6;
-extern mutex global_mutex;
 struct Document {
     int id;
     double relevance;
@@ -41,6 +40,7 @@ set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings)
 
 class SearchServer {
 public:
+    mutable mutex global_mutex;
     // Defines an invalid document id
 // You can refer this constant as SearchServer::INVALID_DOCUMENT_ID
     inline static constexpr int INVALID_DOCUMENT_ID = -1;
@@ -198,7 +198,7 @@ private:
     Query ParseQuery(std::execution::sequenced_policy, const string_view text) const;
 
     template <typename Func>
-    vector<Document>FindAllDocuments(const Query& query, const Func& func) const
+    vector<Document> FindAllDocuments(const Query& query, const Func& func) const
     {
         lock_guard<mutex> guard(global_mutex);
         map<int, double> document_to_relevance;
@@ -298,11 +298,3 @@ private:
         return matched_documents;
     }
 };
-
-        //for (const auto& [document_id, relevance] : document_to_relevance) {
-        //    matched_documents.push_back({
-        //        document_id,
-        //        relevance,
-        //        documents_.at(document_id).rating
-        //        });
-        //}

@@ -38,7 +38,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Final_project_plus_Test::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Final_project_plus_Test-Debug-7d7e8b2cb79554201a84.json",
+					"jsonFile" : "target-Final_project_plus_Test-Debug-88c816d77102aed211ed.json",
 					"name" : "Final_project_plus_Test",
 					"projectIndex" : 0
 				}
@@ -54,6 +54,6 @@
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 0
+		"minor" : 2
 	}
 }

@@ -1,5 +1,5 @@
 ﻿#include "Search_Server.h"
-mutex global_mutex;
+extern mutex global_mutex;
 string ReadLine()
 {
     string s;
