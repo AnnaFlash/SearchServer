@@ -4,9 +4,9 @@
 #include <execution>
 void RemoveDuplicates(SearchServer& search_server) {
     set<int> badids;
-    set<set<string>> words;
-    set<string> doc;
-    map<string, double> w_freq;
+    set<set<string_view>> words;
+    set<string_view> doc;
+    map<string_view, double> w_freq;
     for (const int& ids : search_server) {
         w_freq = search_server.GetWordFrequencies(ids);
         transform(w_freq.begin(), w_freq.end(),

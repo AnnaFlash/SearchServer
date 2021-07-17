@@ -84,3 +84,14 @@
 1	1870	6478045903253062	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	bedfdd0bc891ca20
 25	1891	6478045903472938	CMakeFiles/Final_project_plus_Test.dir/Search_server.cpp.obj	f66bbb01a168db41
 1892	2246	6478045906315342	Final_project_plus_Test.exe	4f6d80b8eca35eef
+0	19	0	clean	9992afb1f91dc381
+38	495	6482604154852545	CMakeFiles/Final_project_plus_Test.dir/process_queries.cpp.obj	701b39d654f1a511
+1	1108	6482604160959036	CMakeFiles/Final_project_plus_Test.dir/Request.cpp.obj	f24fddaccff57b34
+24	1413	6482604163987497	CMakeFiles/Final_project_plus_Test.dir/Tests.cpp.obj	df9c2222a2ee1ba9
+49	1733	6482604167155476	CMakeFiles/Final_project_plus_Test.dir/Search_server.cpp.obj	f66bbb01a168db41
+13	1810	6482604167965212	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	bedfdd0bc891ca20
+1811	2553	6482604173682798	Final_project_plus_Test.exe	4f6d80b8eca35eef
+1	1745	6482624737816886	CMakeFiles/Final_project_plus_Test.dir/Final_project_plus_Test.cpp.obj	bedfdd0bc891ca20
+1747	2071	6482624740545171	Final_project_plus_Test.exe	4f6d80b8eca35eef
+1	1366	6482625636405685	CMakeFiles/Final_project_plus_Test.dir/Search_server.cpp.obj	f66bbb01a168db41
+1367	1673	6482625638914049	Final_project_plus_Test.exe	4f6d80b8eca35eef

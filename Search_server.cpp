@@ -141,8 +141,10 @@ tuple<vector<string_view>, DocumentStatus> SearchServer::MatchDocument(std::exec
 const map<string_view, double> SearchServer::GetWordFrequencies(int document_id) const
 {
     map<string_view, double> res;
-    for (const auto& [word, freq] : word_to_document_freqs_.at(document_id)) {
-        res[word] = freq;
+    if (word_to_document_freqs_.count(document_id)) {
+        for (const auto& [word, freq] : word_to_document_freqs_.at(document_id)) {
+            res[word] = freq;
+        }
     }
     //res = word_to_document_freqs_.at(document_id);
     return res;
