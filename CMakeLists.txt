@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project (Final_project_plus_Test)
+project (SearchServer)
 set(CMAKE_CXX_STANDARD 17)
 file(GLOB SOURCES *.cpp *.h)
 add_executable("${PROJECT_NAME}" "${SOURCES}")
