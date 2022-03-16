@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: Final_project_plus_Test
+# Project: SearchServer
 # Configurations: Debug
 # =============================================================================
 
@@ -35,75 +35,75 @@ CONFIGURATION = Debug
 include CMakeFiles\rules.ninja
 
 # =============================================================================
-# Object build statements for EXECUTABLE target Final_project_plus_Test
+# Object build statements for EXECUTABLE target SearchServer
 
 
 #############################################
-# Order-only phony target for Final_project_plus_Test
+# Order-only phony target for SearchServer
 
-build cmake_object_order_depends_target_Final_project_plus_Test: phony || CMakeFiles\Final_project_plus_Test.dir
+build cmake_object_order_depends_target_SearchServer: phony || CMakeFiles\SearchServer.dir
 
-build CMakeFiles\Final_project_plus_Test.dir\Final_project_plus_Test.cpp.obj: CXX_COMPILER__Final_project_plus_Test_Debug ..\..\..\Final_project_plus_Test.cpp || cmake_object_order_depends_target_Final_project_plus_Test
+build CMakeFiles\SearchServer.dir\Request.cpp.obj: CXX_COMPILER__SearchServer_Debug ..\..\..\Request.cpp || cmake_object_order_depends_target_SearchServer
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
-  OBJECT_DIR = CMakeFiles\Final_project_plus_Test.dir
-  OBJECT_FILE_DIR = CMakeFiles\Final_project_plus_Test.dir
-  TARGET_COMPILE_PDB = CMakeFiles\Final_project_plus_Test.dir\
-  TARGET_PDB = Final_project_plus_Test.pdb
+  OBJECT_DIR = CMakeFiles\SearchServer.dir
+  OBJECT_FILE_DIR = CMakeFiles\SearchServer.dir
+  TARGET_COMPILE_PDB = CMakeFiles\SearchServer.dir\
+  TARGET_PDB = SearchServer.pdb
 
-build CMakeFiles\Final_project_plus_Test.dir\Request.cpp.obj: CXX_COMPILER__Final_project_plus_Test_Debug ..\..\..\Request.cpp || cmake_object_order_depends_target_Final_project_plus_Test
+build CMakeFiles\SearchServer.dir\Search_server.cpp.obj: CXX_COMPILER__SearchServer_Debug ..\..\..\Search_server.cpp || cmake_object_order_depends_target_SearchServer
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
-  OBJECT_DIR = CMakeFiles\Final_project_plus_Test.dir
-  OBJECT_FILE_DIR = CMakeFiles\Final_project_plus_Test.dir
-  TARGET_COMPILE_PDB = CMakeFiles\Final_project_plus_Test.dir\
-  TARGET_PDB = Final_project_plus_Test.pdb
+  OBJECT_DIR = CMakeFiles\SearchServer.dir
+  OBJECT_FILE_DIR = CMakeFiles\SearchServer.dir
+  TARGET_COMPILE_PDB = CMakeFiles\SearchServer.dir\
+  TARGET_PDB = SearchServer.pdb
 
-build CMakeFiles\Final_project_plus_Test.dir\Search_server.cpp.obj: CXX_COMPILER__Final_project_plus_Test_Debug ..\..\..\Search_server.cpp || cmake_object_order_depends_target_Final_project_plus_Test
+build CMakeFiles\SearchServer.dir\Tests.cpp.obj: CXX_COMPILER__SearchServer_Debug ..\..\..\Tests.cpp || cmake_object_order_depends_target_SearchServer
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
-  OBJECT_DIR = CMakeFiles\Final_project_plus_Test.dir
-  OBJECT_FILE_DIR = CMakeFiles\Final_project_plus_Test.dir
-  TARGET_COMPILE_PDB = CMakeFiles\Final_project_plus_Test.dir\
-  TARGET_PDB = Final_project_plus_Test.pdb
+  OBJECT_DIR = CMakeFiles\SearchServer.dir
+  OBJECT_FILE_DIR = CMakeFiles\SearchServer.dir
+  TARGET_COMPILE_PDB = CMakeFiles\SearchServer.dir\
+  TARGET_PDB = SearchServer.pdb
 
-build CMakeFiles\Final_project_plus_Test.dir\Tests.cpp.obj: CXX_COMPILER__Final_project_plus_Test_Debug ..\..\..\Tests.cpp || cmake_object_order_depends_target_Final_project_plus_Test
+build CMakeFiles\SearchServer.dir\main.cpp.obj: CXX_COMPILER__SearchServer_Debug ..\..\..\main.cpp || cmake_object_order_depends_target_SearchServer
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
-  OBJECT_DIR = CMakeFiles\Final_project_plus_Test.dir
-  OBJECT_FILE_DIR = CMakeFiles\Final_project_plus_Test.dir
-  TARGET_COMPILE_PDB = CMakeFiles\Final_project_plus_Test.dir\
-  TARGET_PDB = Final_project_plus_Test.pdb
+  OBJECT_DIR = CMakeFiles\SearchServer.dir
+  OBJECT_FILE_DIR = CMakeFiles\SearchServer.dir
+  TARGET_COMPILE_PDB = CMakeFiles\SearchServer.dir\
+  TARGET_PDB = SearchServer.pdb
 
-build CMakeFiles\Final_project_plus_Test.dir\process_queries.cpp.obj: CXX_COMPILER__Final_project_plus_Test_Debug ..\..\..\process_queries.cpp || cmake_object_order_depends_target_Final_project_plus_Test
+build CMakeFiles\SearchServer.dir\process_queries.cpp.obj: CXX_COMPILER__SearchServer_Debug ..\..\..\process_queries.cpp || cmake_object_order_depends_target_SearchServer
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1 -std:c++17
-  OBJECT_DIR = CMakeFiles\Final_project_plus_Test.dir
-  OBJECT_FILE_DIR = CMakeFiles\Final_project_plus_Test.dir
-  TARGET_COMPILE_PDB = CMakeFiles\Final_project_plus_Test.dir\
-  TARGET_PDB = Final_project_plus_Test.pdb
+  OBJECT_DIR = CMakeFiles\SearchServer.dir
+  OBJECT_FILE_DIR = CMakeFiles\SearchServer.dir
+  TARGET_COMPILE_PDB = CMakeFiles\SearchServer.dir\
+  TARGET_PDB = SearchServer.pdb
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target Final_project_plus_Test
+# Link build statements for EXECUTABLE target SearchServer
 
 
 #############################################
-# Link the executable Final_project_plus_Test.exe
+# Link the executable SearchServer.exe
 
-build Final_project_plus_Test.exe: CXX_EXECUTABLE_LINKER__Final_project_plus_Test_Debug CMakeFiles\Final_project_plus_Test.dir\Final_project_plus_Test.cpp.obj CMakeFiles\Final_project_plus_Test.dir\Request.cpp.obj CMakeFiles\Final_project_plus_Test.dir\Search_server.cpp.obj CMakeFiles\Final_project_plus_Test.dir\Tests.cpp.obj CMakeFiles\Final_project_plus_Test.dir\process_queries.cpp.obj
+build SearchServer.exe: CXX_EXECUTABLE_LINKER__SearchServer_Debug CMakeFiles\SearchServer.dir\Request.cpp.obj CMakeFiles\SearchServer.dir\Search_server.cpp.obj CMakeFiles\SearchServer.dir\Tests.cpp.obj CMakeFiles\SearchServer.dir\main.cpp.obj CMakeFiles\SearchServer.dir\process_queries.cpp.obj
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
-  OBJECT_DIR = CMakeFiles\Final_project_plus_Test.dir
+  OBJECT_DIR = CMakeFiles\SearchServer.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
-  TARGET_COMPILE_PDB = CMakeFiles\Final_project_plus_Test.dir\
-  TARGET_FILE = Final_project_plus_Test.exe
-  TARGET_IMPLIB = Final_project_plus_Test.lib
-  TARGET_PDB = Final_project_plus_Test.pdb
+  TARGET_COMPILE_PDB = CMakeFiles\SearchServer.dir\
+  TARGET_FILE = SearchServer.exe
+  TARGET_IMPLIB = SearchServer.lib
+  TARGET_PDB = SearchServer.pdb
 
 
 #############################################
 # Utility command for edit_cache
 
 build CMakeFiles\edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Anna\source\repos\Final_project_plus_Test\out\build\x64-Debug && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\理磬\source\repos\SearchServer\out\build\x64-Debug && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -114,7 +114,7 @@ build edit_cache: phony CMakeFiles\edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Anna\source\repos\Final_project_plus_Test\out\build\x64-Debug && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" --regenerate-during-build -SC:\Users\Anna\source\repos\Final_project_plus_Test -BC:\Users\Anna\source\repos\Final_project_plus_Test\out\build\x64-Debug"
+  COMMAND = cmd.exe /C "cd /D C:\Users\理磬\source\repos\SearchServer\out\build\x64-Debug && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" --regenerate-during-build -SC:\Users\理磬\source\repos\SearchServer -BC:\Users\理磬\source\repos\SearchServer\out\build\x64-Debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -124,7 +124,7 @@ build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build Final_project_plus_Test: phony Final_project_plus_Test.exe
+build SearchServer: phony SearchServer.exe
 
 # =============================================================================
 # Folder targets.
@@ -132,9 +132,9 @@ build Final_project_plus_Test: phony Final_project_plus_Test.exe
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/Anna/source/repos/Final_project_plus_Test/out/build/x64-Debug
+# Folder: C:/Users/理磬/source/repos/SearchServer/out/build/x64-Debug
 
-build all: phony Final_project_plus_Test.exe
+build all: phony SearchServer.exe
 
 # =============================================================================
 # Built-in targets

@@ -97,24 +97,6 @@ int main() {
     search_server.AddDocument(6, "cat funny and nasty rat"s, DocumentStatus::ACTUAL, { 1, 2 });
     search_server.GetWordFrequencies(8);
     RemoveDuplicates(search_server);
-    //int n = 25;
-    //string s = { "                         " };
-    //for (size_t i = 0; i < 10; i++) {
-    //    gen_random(s, n);
-    //    search_server.AddDocument(i + 6, s, DocumentStatus::ACTUAL, { 1 });
-    //}
-    //search_server.AddDocument(6, "cat", DocumentStatus::ACTUAL, { 1, 2 });
-    search_server.FindTopDocuments("fluffy well-groomed cat uncle Styopa"s, [](int document_id, DocumentStatus status, int rating) { return rating > 2; });
-    search_server.FindTopDocuments("", DocumentStatus::ACTUAL);
-    FindTopDocuments(search_server, "-cat funny -pet nasty rat");
-  /* DocumentStatus status = DocumentStatus::ACTUAL;
-   search_server.FindTopDocuments("", DocumentStatus::ACTUAL);*/
-   /*MatchDocuments(search_server, "cat nasty -hair");
-    map<string_view, double> a = search_server.GetWordFrequencies(3);
-    for (auto& [words, freq] : a) {
-        cout << words << " " << freq << endl;
-    }*/
-   // const string query = "curly and funny -not"s;
     TestSearchServer();
     return 0;
 }

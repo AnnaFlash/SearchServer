@@ -15,7 +15,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x64/lib.exe"
+			"value" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/lib.exe"
 		},
 		{
 			"name" : "CMAKE_BUILD_TYPE",
@@ -39,7 +39,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/Anna/source/repos/Final_project_plus_Test/out/build/x64-Debug"
+			"value" : "c:/Users/Анна/source/repos/SearchServer/out/build/x64-Debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -127,7 +127,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x64/cl.exe"
+			"value" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS",
@@ -239,7 +239,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x64/cl.exe"
+			"value" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -515,7 +515,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/Anna/source/repos/Final_project_plus_Test"
+			"value" : "C:/Users/Анна/source/repos/SearchServer"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -527,7 +527,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/Anna/source/repos/Final_project_plus_Test/out/install/x64-Debug"
+			"value" : "C:/Users/Анна/Source/Repos/SearchServer/out/install/x64-Debug"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -543,7 +543,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x64/link.exe"
+			"value" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/link.exe"
 		},
 		{
 			"name" : "CMAKE_MAKE_PROGRAM",
@@ -711,7 +711,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "Final_project_plus_Test"
+			"value" : "SearchServer"
 		},
 		{
 			"name" : "CMAKE_RANLIB",
@@ -1054,7 +1054,7 @@
 			"value" : "FALSE"
 		},
 		{
-			"name" : "Final_project_plus_Test_BINARY_DIR",
+			"name" : "SearchServer_BINARY_DIR",
 			"properties" : 
 			[
 				{
@@ -1063,10 +1063,10 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Anna/source/repos/Final_project_plus_Test/out/build/x64-Debug"
+			"value" : "C:/Users/Анна/source/repos/SearchServer/out/build/x64-Debug"
 		},
 		{
-			"name" : "Final_project_plus_Test_SOURCE_DIR",
+			"name" : "SearchServer_SOURCE_DIR",
 			"properties" : 
 			[
 				{
@@ -1075,7 +1075,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Anna/source/repos/Final_project_plus_Test"
+			"value" : "C:/Users/Анна/source/repos/SearchServer"
 		}
 	],
 	"kind" : "cache",
