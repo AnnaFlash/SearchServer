@@ -1,1 +1,1 @@
-![IterTools Logo](docs/images/logo.png)
+![IterTools Logo](/logo.png)
